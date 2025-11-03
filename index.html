@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Participación - Diagnóstico Líneas de Acción</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold text-center">
+                <i class="fas fa-trophy mr-2"></i>
+                Tablero de Participación
+            </h1>
+            <p class="text-center text-blue-100 mt-2">Diagnóstico Líneas de Acción</p>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+
+        <!-- Random Selector Section -->
+        <section class="mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">
+                    <i class="fas fa-dice mr-2 text-blue-600"></i>
+                    Selector Aleatorio
+                </h2>
+
+                <!-- Random Display -->
+                <div id="randomDisplay" class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 mb-6 min-h-[120px] flex items-center justify-center border-2 border-blue-200">
+                    <div class="text-center">
+                        <div id="randomName" class="text-3xl font-bold text-gray-800 mb-2">
+                            ¡Haz clic para seleccionar!
+                        </div>
+                        <div id="randomId" class="text-lg text-gray-600"></div>
+                    </div>
+                </div>
+
+                <!-- Random Button -->
+                <button id="randomBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <i class="fas fa-random mr-2"></i>
+                    Seleccionar Estudiante
+                </button>
+            </div>
+        </section>
+
+        <!-- Control Panel -->
+        <section class="mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">
+                    <i class="fas fa-gamepad mr-2 text-purple-600"></i>
+                    Panel de Control
+                </h2>
+
+                <!-- Student Selector -->
+                <div class="mb-6">
+                    <label for="studentSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                        Seleccionar Estudiante:
+                    </label>
+                    <select id="studentSelect" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <option value="">-- Selecciona un estudiante --</option>
+                    </select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <button id="voluntaryBtn" class="action-btn bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                        <i class="fas fa-hand-paper text-2xl mb-2"></i>
+                        <div class="text-lg">Participación Voluntaria</div>
+                        <div class="text-sm opacity-90">+3 pts</div>
+                    </button>
+
+                    <button id="insightfulBtn" class="action-btn bg-purple-500 hover:bg-purple-600 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                        <i class="fas fa-lightbulb text-2xl mb-2"></i>
+                        <div class="text-lg">Opinión Insightful</div>
+                        <div class="text-sm opacity-90">+1 pt extra</div>
+                    </button>
+
+                    <button id="teamMvpBtn" class="action-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                        <i class="fas fa-award text-2xl mb-2"></i>
+                        <div class="text-lg">MVP Trabajo en Equipo</div>
+                        <div class="text-sm opacity-90">+2 pts</div>
+                    </button>
+
+                    <button id="resetBtn" class="action-btn bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                        <i class="fas fa-redo text-2xl mb-2"></i>
+                        <div class="text-lg">Reiniciar Datos</div>
+                        <div class="text-sm opacity-90">¡Cuidado!</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Overview -->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Total Participaciones</p>
+                            <p id="totalParticipations" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <div class="bg-blue-100 rounded-full p-3">
+                            <i class="fas fa-chart-line text-2xl text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Puntos Totales</p>
+                            <p id="totalPoints" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <div class="bg-green-100 rounded-full p-3">
+                            <i class="fas fa-star text-2xl text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Estudiantes Activos</p>
+                            <p id="activeStudents" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <div class="bg-purple-100 rounded-full p-3">
+                            <i class="fas fa-users text-2xl text-purple-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 font-medium">Badges Otorgados</p>
+                            <p id="totalBadges" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <div class="bg-yellow-100 rounded-full p-3">
+                            <i class="fas fa-medal text-2xl text-yellow-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab Navigation -->
+        <nav class="mb-8">
+            <div class="bg-white rounded-lg shadow-md p-2">
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <button id="tab-individual" class="tab-btn active px-6 py-3 font-semibold rounded-lg transition-all">
+                        <i class="fas fa-user mr-2"></i>
+                        Tablero Individual
+                    </button>
+                    <button id="tab-teams" class="tab-btn px-6 py-3 font-semibold rounded-lg transition-all">
+                        <i class="fas fa-users mr-2"></i>
+                        Equipos
+                    </button>
+                    <button id="tab-awards" class="tab-btn px-6 py-3 font-semibold rounded-lg transition-all">
+                        <i class="fas fa-award mr-2"></i>
+                        Premios
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- INDIVIDUAL TAB -->
+        <div id="individual-tab">
+        <!-- Leaderboard -->
+        <section class="mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-list-ol mr-2 text-green-600"></i>
+                        Tabla de Clasificación
+                    </h2>
+
+                    <!-- Sort Controls -->
+                    <div class="flex gap-2">
+                        <button id="sortByPoints" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-medium transition-all">
+                            <i class="fas fa-sort-amount-down mr-1"></i>
+                            Por Puntos
+                        </button>
+                        <button id="sortByName" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-all">
+                            <i class="fas fa-sort-alpha-down mr-1"></i>
+                            Por Nombre
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100 border-b-2 border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">#</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Estudiante</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Puntos</th>
+                                <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Participaciones</th>
+                                <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Badges</th>
+                                <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Perfil</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody" class="divide-y divide-gray-200">
+                            <!-- Students will be populated here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Badge Legend -->
+        <section class="mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">
+                    <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+                    Leyenda de Badges
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <i class="fas fa-trophy text-2xl text-yellow-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Top Participante</h3>
+                            <p class="text-sm text-gray-600">Estudiante con más puntos totales</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                        <i class="fas fa-brain text-2xl text-purple-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Pensador Crítico</h3>
+                            <p class="text-sm text-gray-600">Más opiniones insightful</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-red-50 rounded-lg border border-red-200">
+                        <i class="fas fa-bolt text-2xl text-red-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Valiente</h3>
+                            <p class="text-sm text-gray-600">Primera mano voluntaria</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <i class="fas fa-award text-2xl text-blue-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">MVP de Equipo</h3>
+                            <p class="text-sm text-gray-600">Más MVPs en trabajos grupales</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                        <i class="fas fa-fire text-2xl text-orange-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Racha Activa</h3>
+                            <p class="text-sm text-gray-600">Participó 3+ días consecutivos</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                        <i class="fas fa-chart-line text-2xl text-green-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Sistema de Puntos</h3>
+                            <p class="text-sm text-gray-600">Azar: 1pt | Voluntaria: 3pts | Insightful: +1pt | MVP Equipo: +2pts</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <i class="fas fa-crown text-2xl text-yellow-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Casa Ganadora</h3>
+                            <p class="text-sm text-gray-600">Tu casa tiene más puntos totales</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <i class="fas fa-star text-2xl text-yellow-400 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Premio Excelencia</h3>
+                            <p class="text-sm text-gray-600">Top 25% de la clase (Cuartil superior)</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <i class="fas fa-bullseye text-2xl text-blue-400 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Premio Consistencia</h3>
+                            <p class="text-sm text-gray-600">Participación cerca de la media (±0.5σ)</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                        <i class="fas fa-rocket text-2xl text-green-400 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Premio En Progreso</h3>
+                            <p class="text-sm text-gray-600">Sigue participando, ¡vas bien!</p>
+                        </div>
+                    </div>
+
+                    <!-- Special/Fun Badges -->
+                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <i class="fas fa-user-slash text-2xl text-gray-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Silencioso</h3>
+                            <p class="text-sm text-gray-600">5 días consecutivos sin participar</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                        <i class="fas fa-comments text-2xl text-green-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Habla Poco pero Voluntario</h3>
+                            <p class="text-sm text-gray-600">Pocas participaciones pero todas voluntarias</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                        <i class="fas fa-undo text-2xl text-orange-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Come Back Kid</h3>
+                            <p class="text-sm text-gray-600">Regresó después de larga ausencia</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <i class="fas fa-gem text-2xl text-yellow-600 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Perfeccionista</h3>
+                            <p class="text-sm text-gray-600">Solo participaciones voluntarias, nunca al azar</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                        <i class="fas fa-moon text-2xl text-indigo-500 mt-1"></i>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Noctámbulo</h3>
+                            <p class="text-sm text-gray-600">Última participación del día (3+ veces)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </div>
+        <!-- END INDIVIDUAL TAB -->
+
+        <!-- TEAMS TAB -->
+        <div id="teams-tab" style="display: none;">
+            <section class="mb-8">
+                <div id="teamsContainer">
+                    <!-- Teams will be rendered by JavaScript -->
+                </div>
+            </section>
+        </div>
+        <!-- END TEAMS TAB -->
+
+        <!-- AWARDS TAB -->
+        <div id="awards-tab" style="display: none;">
+            <section class="mb-8">
+                <div id="awardsContainer">
+                    <!-- Awards will be rendered by JavaScript -->
+                </div>
+            </section>
+        </div>
+        <!-- END AWARDS TAB -->
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-400">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                Tablero de Participación Gamificado - Diagnóstico Líneas de Acción
+            </p>
+            <p class="text-sm text-gray-500 mt-2">
+                Los datos se guardan localmente en tu navegador
+            </p>
+        </div>
+    </footer>
+
+    <!-- Student Profile Modal -->
+    <div id="studentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4" onclick="if(event.target === this) closeStudentModal()">
+        <div id="modalContent" class="modal-card transform transition-all duration-300 scale-95">
+            <!-- Modal content will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Confetti Container (for celebrations) -->
+    <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-50"></div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
