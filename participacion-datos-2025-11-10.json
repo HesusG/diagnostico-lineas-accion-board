@@ -1,0 +1,424 @@
+{
+  "version": "1.0",
+  "exportDate": "2025-11-10T14:47:57.850Z",
+  "students": [
+    {
+      "name": "Homero Hurtado Morales",
+      "id": "A01423928",
+      "points": 0,
+      "participations": [],
+      "badges": [],
+      "house": "fire"
+    },
+    {
+      "name": "Raymundo Díaz Tijera",
+      "id": "A01664497",
+      "points": 9,
+      "participations": [
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762189113347,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762443200053,
+          "date": "2025-11-06"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762443526001,
+          "date": "2025-11-06"
+        },
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762444450281,
+          "date": "2025-11-06"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762446602377,
+          "date": "2025-11-06"
+        }
+      ],
+      "badges": [
+        {
+          "type": "CRITICAL_THINKER",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "BRAVE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "EXCELLENCE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "PERFECTIONIST",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "water"
+    },
+    {
+      "name": "José Alejandro Cárdenas López",
+      "id": "A01178064",
+      "points": 0,
+      "participations": [],
+      "badges": [],
+      "house": "earth"
+    },
+    {
+      "name": "Diego Pablo Ruiz Ramírez",
+      "id": "A01710766",
+      "points": 15,
+      "participations": [
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762187541053,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762187545625,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762189017408,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "random",
+          "points": 1,
+          "timestamp": 1762280271137,
+          "date": "2025-11-04"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762442876808,
+          "date": "2025-11-06"
+        },
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762444466549,
+          "date": "2025-11-06"
+        },
+        {
+          "type": "team_mvp",
+          "points": 2,
+          "timestamp": 1762444468372,
+          "date": "2025-11-06"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762444477386,
+          "date": "2025-11-06"
+        }
+      ],
+      "badges": [
+        {
+          "type": "TOP_PARTICIPANT",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "CRITICAL_THINKER",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "BRAVE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "TEAM_MVP",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "WINNING_HOUSE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "EXCELLENCE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "air"
+    },
+    {
+      "name": "Mauricio Cortes Ortiz",
+      "id": "A01286052",
+      "points": 6,
+      "participations": [
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762188990639,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762444454328,
+          "date": "2025-11-06"
+        }
+      ],
+      "badges": [
+        {
+          "type": "EXCELLENCE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "QUALITY_OVER_QUANTITY",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "fire"
+    },
+    {
+      "name": "Federica Rigoletti Hossfeld",
+      "id": "A01783996",
+      "points": 1,
+      "participations": [
+        {
+          "type": "random",
+          "points": 1,
+          "timestamp": 1762272365063,
+          "date": "2025-11-04"
+        }
+      ],
+      "badges": [],
+      "house": "water"
+    },
+    {
+      "name": "Valeria Carrillo Pastrana",
+      "id": "A01424037",
+      "points": 1,
+      "participations": [
+        {
+          "type": "random",
+          "points": 1,
+          "timestamp": 1762272302370,
+          "date": "2025-11-04"
+        }
+      ],
+      "badges": [],
+      "house": "earth"
+    },
+    {
+      "name": "Grecia Dayan Basurto González",
+      "id": "A01198292",
+      "points": 0,
+      "participations": [],
+      "badges": [
+        {
+          "type": "WINNING_HOUSE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "air"
+    },
+    {
+      "name": "Ibrahim Mateos Campos",
+      "id": "A01174965",
+      "points": 0,
+      "participations": [],
+      "badges": [],
+      "house": "fire"
+    },
+    {
+      "name": "Ramiro Ochoa Loaiza",
+      "id": "A01640248",
+      "points": 1,
+      "participations": [
+        {
+          "type": "random",
+          "points": 1,
+          "timestamp": 1762272342626,
+          "date": "2025-11-04"
+        }
+      ],
+      "badges": [],
+      "house": "water"
+    },
+    {
+      "name": "Ana Sofía Miranda Salazar",
+      "id": "A01658417",
+      "points": 3,
+      "participations": [
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762188899377,
+          "date": "2025-11-03"
+        }
+      ],
+      "badges": [
+        {
+          "type": "CONSISTENT",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "QUALITY_OVER_QUANTITY",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "earth"
+    },
+    {
+      "name": "José Pablo Garza Albuerne",
+      "id": "A00837885",
+      "points": 3,
+      "participations": [
+        {
+          "type": "random",
+          "points": 1,
+          "timestamp": 1762187855264,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762188061963,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762443227843,
+          "date": "2025-11-06"
+        }
+      ],
+      "badges": [
+        {
+          "type": "WINNING_HOUSE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "CONSISTENT",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "air"
+    },
+    {
+      "name": "Hernan Alejandro Izurieta Acosta",
+      "id": "A00840990",
+      "points": 1,
+      "participations": [
+        {
+          "type": "random",
+          "points": 1,
+          "timestamp": 1762445032766,
+          "date": "2025-11-06"
+        }
+      ],
+      "badges": [],
+      "house": "fire"
+    },
+    {
+      "name": "Fernanda Patrón Tamez",
+      "id": "A01643495",
+      "points": 5,
+      "participations": [
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762187566645,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762189006054,
+          "date": "2025-11-03"
+        },
+        {
+          "type": "insightful",
+          "points": 1,
+          "timestamp": 1762443218965,
+          "date": "2025-11-06"
+        }
+      ],
+      "badges": [
+        {
+          "type": "EXCELLENCE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "water"
+    },
+    {
+      "name": "Patricio Almaguer González",
+      "id": "A01286908",
+      "points": 0,
+      "participations": [],
+      "badges": [],
+      "house": "earth"
+    },
+    {
+      "name": "Jimena Domínguez Carmona",
+      "id": "A01748895",
+      "points": 3,
+      "participations": [
+        {
+          "type": "voluntary",
+          "points": 3,
+          "timestamp": 1762189033872,
+          "date": "2025-11-03"
+        }
+      ],
+      "badges": [
+        {
+          "type": "WINNING_HOUSE",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "CONSISTENT",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        },
+        {
+          "type": "QUALITY_OVER_QUANTITY",
+          "earnedDate": 1762446602377,
+          "displayDate": "6/11/2025"
+        }
+      ],
+      "house": "air"
+    }
+  ],
+  "metadata": {
+    "totalStudents": 16,
+    "totalParticipations": 27
+  }
+}
