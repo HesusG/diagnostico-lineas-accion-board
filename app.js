@@ -1543,7 +1543,7 @@ function importData(event) {
 
             // Import data
             students = importedData.students;
-            saveData();
+            saveToLocalStorage();
 
             // Refresh all displays
             renderCurrentTab();
@@ -1641,7 +1641,7 @@ function changeStudentHouse(studentIndex, newHouse) {
 
     if (confirmed) {
         student.house = newHouse;
-        saveData();
+        saveToLocalStorage();
         renderHouseConfig();
 
         // Show confirmation
