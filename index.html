@@ -187,6 +187,10 @@
                         <i class="fas fa-award mr-2"></i>
                         Premios
                     </button>
+                    <button id="tab-config" class="tab-btn px-6 py-3 font-semibold rounded-lg transition-all">
+                        <i class="fas fa-cog mr-2"></i>
+                        Configuración
+                    </button>
                 </div>
             </div>
         </nav>
@@ -226,7 +230,7 @@
                                 <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Puntos</th>
                                 <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Participaciones</th>
                                 <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Badges</th>
-                                <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Perfil</th>
+                                <th class="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="studentTableBody" class="divide-y divide-gray-200">
@@ -391,6 +395,88 @@
             </section>
         </div>
         <!-- END AWARDS TAB -->
+
+        <!-- CONFIG TAB -->
+        <div id="config-tab" style="display: none;">
+            <!-- Export/Import Section -->
+            <section class="mb-8">
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">
+                        <i class="fas fa-download mr-2 text-gray-600"></i>
+                        Exportar e Importar Datos
+                    </h2>
+
+                    <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p class="text-sm text-gray-700">
+                            <i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i>
+                            <strong>Importante:</strong> Usa estas funciones para hacer respaldo de tus datos o transferirlos a otra instancia de la aplicación.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Export -->
+                        <div class="p-6 bg-green-50 border-2 border-green-200 rounded-xl">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-file-export text-3xl text-green-600 mr-3"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800">Exportar Datos</h3>
+                                    <p class="text-sm text-gray-600">Descarga todos los datos en formato JSON</p>
+                                </div>
+                            </div>
+                            <button onclick="exportData()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                <i class="fas fa-download mr-2"></i>
+                                Descargar Datos
+                            </button>
+                            <p class="text-xs text-gray-500 mt-3">
+                                Se descargará un archivo .json con todos los estudiantes, participaciones, badges y casas
+                            </p>
+                        </div>
+
+                        <!-- Import -->
+                        <div class="p-6 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-file-import text-3xl text-blue-600 mr-3"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800">Importar Datos</h3>
+                                    <p class="text-sm text-gray-600">Carga datos desde un archivo JSON</p>
+                                </div>
+                            </div>
+                            <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importData(event)">
+                            <button onclick="document.getElementById('importFileInput').click()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                                <i class="fas fa-upload mr-2"></i>
+                                Cargar Datos
+                            </button>
+                            <p class="text-xs text-gray-500 mt-3">
+                                <i class="fas fa-exclamation-circle mr-1 text-orange-500"></i>
+                                Esto reemplazará todos los datos actuales
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- House Configuration Section -->
+            <section class="mb-8">
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">
+                        <i class="fas fa-users-cog mr-2 text-gray-600"></i>
+                        Configuración de Casas/Equipos
+                    </h2>
+
+                    <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p class="text-sm text-gray-700">
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                            Aquí puedes reasignar estudiantes a diferentes casas. Los puntos individuales del estudiante se mantendrán, pero ahora contribuirán al total de la nueva casa.
+                        </p>
+                    </div>
+
+                    <div id="houseConfigContainer" class="space-y-6">
+                        <!-- House configuration will be rendered by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- END CONFIG TAB -->
 
     </div>
 

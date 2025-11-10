@@ -745,16 +745,38 @@ function renderTable() {
         badgesCell.className = 'px-6 py-4 whitespace-nowrap text-center';
         badgesCell.innerHTML = renderBadges(student.badges);
 
-        // View Profile button
-        const profileCell = document.createElement('td');
-        profileCell.className = 'px-6 py-4 whitespace-nowrap text-center';
+        // Quick Actions buttons
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'px-6 py-4 whitespace-nowrap text-center';
         const actualIndex = students.indexOf(student);
-        profileCell.innerHTML = `
-            <button onclick="openStudentModal(${actualIndex})"
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-all transform hover:scale-105"
-                    title="Ver Perfil">
-                <i class="fas fa-eye"></i>
-            </button>
+        actionsCell.innerHTML = `
+            <div class="flex items-center justify-center space-x-1">
+                <button onclick="addPoints(${actualIndex}, 'random', 1)"
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs transition-all"
+                        title="Participación al Azar +1pt">
+                    <i class="fas fa-dice text-xs"></i>
+                </button>
+                <button onclick="addPoints(${actualIndex}, 'voluntary', 3)"
+                        class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs transition-all"
+                        title="Participación Voluntaria +3pts">
+                    <i class="fas fa-hand-paper text-xs"></i>
+                </button>
+                <button onclick="addPoints(${actualIndex}, 'insightful', 1)"
+                        class="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded text-xs transition-all"
+                        title="Opinión Insightful +1pt">
+                    <i class="fas fa-lightbulb text-xs"></i>
+                </button>
+                <button onclick="addPoints(${actualIndex}, 'team_mvp', 2)"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs transition-all"
+                        title="MVP Trabajo en Equipo +2pts">
+                    <i class="fas fa-award text-xs"></i>
+                </button>
+                <button onclick="openStudentModal(${actualIndex})"
+                        class="bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded text-xs transition-all"
+                        title="Ver Perfil">
+                    <i class="fas fa-eye text-xs"></i>
+                </button>
+            </div>
         `;
 
         row.appendChild(rankCell);
@@ -763,7 +785,7 @@ function renderTable() {
         row.appendChild(pointsCell);
         row.appendChild(participationsCell);
         row.appendChild(badgesCell);
-        row.appendChild(profileCell);
+        row.appendChild(actionsCell);
 
         tbody.appendChild(row);
     });
@@ -796,7 +818,7 @@ function switchTab(tabName) {
     currentTab = tabName;
 
     // Update tab buttons
-    const tabs = ['individual', 'teams', 'awards'];
+    const tabs = ['individual', 'teams', 'awards', 'config'];
     tabs.forEach(tab => {
         const btn = document.getElementById(`tab-${tab}`);
         if (btn) {
@@ -817,10 +839,12 @@ function renderCurrentTab() {
     const individualTab = document.getElementById('individual-tab');
     const teamsTab = document.getElementById('teams-tab');
     const awardsTab = document.getElementById('awards-tab');
+    const configTab = document.getElementById('config-tab');
 
     if (individualTab) individualTab.style.display = 'none';
     if (teamsTab) teamsTab.style.display = 'none';
     if (awardsTab) awardsTab.style.display = 'none';
+    if (configTab) configTab.style.display = 'none';
 
     // Show current tab
     if (currentTab === 'individual') {
@@ -832,6 +856,9 @@ function renderCurrentTab() {
     } else if (currentTab === 'awards') {
         if (awardsTab) awardsTab.style.display = 'block';
         renderAwardsTab();
+    } else if (currentTab === 'config') {
+        if (configTab) configTab.style.display = 'block';
+        renderHouseConfig();
     }
 }
 
@@ -1404,10 +1431,12 @@ function attachEventListeners() {
     const tabIndividual = document.getElementById('tab-individual');
     const tabTeams = document.getElementById('tab-teams');
     const tabAwards = document.getElementById('tab-awards');
+    const tabConfig = document.getElementById('tab-config');
 
     if (tabIndividual) tabIndividual.addEventListener('click', () => switchTab('individual'));
     if (tabTeams) tabTeams.addEventListener('click', () => switchTab('teams'));
     if (tabAwards) tabAwards.addEventListener('click', () => switchTab('awards'));
+    if (tabConfig) tabConfig.addEventListener('click', () => switchTab('config'));
 
     // Random selector
     const randomBtn = document.getElementById('randomBtn');
@@ -1445,4 +1474,180 @@ function attachEventListeners() {
 
     if (sortByPointsBtn) sortByPointsBtn.addEventListener('click', sortByPoints);
     if (sortByNameBtn) sortByNameBtn.addEventListener('click', sortByName);
+}
+
+// ==========================================
+// EXPORT / IMPORT DATA
+// ==========================================
+
+function exportData() {
+    // Prepare data object with all information
+    const exportObject = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        students: students,
+        metadata: {
+            totalStudents: students.length,
+            totalParticipations: students.reduce((sum, s) => sum + s.participations.length, 0)
+        }
+    };
+
+    // Convert to JSON string with formatting
+    const jsonString = JSON.stringify(exportObject, null, 2);
+
+    // Create blob and download
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    // Generate filename with date
+    const dateStr = new Date().toISOString().split('T')[0];
+    a.download = `participacion-datos-${dateStr}.json`;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('Datos exportados exitosamente');
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+
+            // Validate data structure
+            if (!importedData.students || !Array.isArray(importedData.students)) {
+                throw new Error('Formato de datos inválido');
+            }
+
+            // Confirm before overwriting
+            const confirmed = confirm(
+                `¿Estás seguro de que quieres importar estos datos?\n\n` +
+                `Estudiantes: ${importedData.students.length}\n` +
+                `Participaciones: ${importedData.metadata?.totalParticipations || 'N/A'}\n\n` +
+                `Esto reemplazará TODOS los datos actuales.`
+            );
+
+            if (!confirmed) {
+                event.target.value = ''; // Reset file input
+                return;
+            }
+
+            // Import data
+            students = importedData.students;
+            saveData();
+
+            // Refresh all displays
+            renderCurrentTab();
+            updateStats();
+            populateStudentSelect();
+
+            alert('Datos importados exitosamente');
+
+        } catch (error) {
+            alert(`Error al importar datos: ${error.message}\n\nAsegúrate de que el archivo sea un JSON válido exportado de esta aplicación.`);
+        }
+
+        // Reset file input
+        event.target.value = '';
+    };
+
+    reader.readAsText(file);
+}
+
+// ==========================================
+// HOUSE CONFIGURATION
+// ==========================================
+
+function renderHouseConfig() {
+    const container = document.getElementById('houseConfigContainer');
+    if (!container) return;
+
+    // Group students by house
+    const studentsByHouse = {
+        fire: students.filter(s => s.house === 'fire'),
+        water: students.filter(s => s.house === 'water'),
+        earth: students.filter(s => s.house === 'earth'),
+        air: students.filter(s => s.house === 'air')
+    };
+
+    let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">';
+
+    Object.entries(HOUSES).forEach(([key, house]) => {
+        const houseStudents = studentsByHouse[key] || [];
+
+        html += `
+            <div class="p-6 rounded-xl border-2 ${house.borderColor} ${house.bgColor}">
+                <div class="flex items-center mb-4">
+                    <span class="text-4xl mr-3">${house.icon}</span>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">${house.name}</h3>
+                        <p class="text-sm text-gray-600">${houseStudents.length} estudiantes</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+        `;
+
+        houseStudents.forEach(student => {
+            const studentIndex = students.indexOf(student);
+            html += `
+                <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="font-semibold text-gray-800">${student.name}</span>
+                        <span class="text-sm text-gray-500 ml-2">(${student.totalPoints} pts)</span>
+                    </div>
+                    <select onchange="changeStudentHouse(${studentIndex}, this.value)"
+                            class="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Mover a...</option>
+                        ${Object.entries(HOUSES).map(([houseKey, houseData]) =>
+                            houseKey !== key ? `<option value="${houseKey}">${houseData.icon} ${houseData.name}</option>` : ''
+                        ).join('')}
+                    </select>
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function changeStudentHouse(studentIndex, newHouse) {
+    if (!newHouse || studentIndex < 0 || studentIndex >= students.length) return;
+
+    const student = students[studentIndex];
+    const oldHouse = HOUSES[student.house]?.name || 'desconocida';
+    const newHouseData = HOUSES[newHouse];
+
+    if (!newHouseData) return;
+
+    // Confirm change
+    const confirmed = confirm(
+        `¿Cambiar a ${student.name} de ${oldHouse} a ${newHouseData.name}?`
+    );
+
+    if (confirmed) {
+        student.house = newHouse;
+        saveData();
+        renderHouseConfig();
+
+        // Show confirmation
+        alert(`${student.name} ahora está en ${newHouseData.icon} ${newHouseData.name}`);
+    } else {
+        // Reset dropdown
+        renderHouseConfig();
+    }
 }
