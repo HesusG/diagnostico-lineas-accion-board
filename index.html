@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta cha
+    rset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Participación - Diagnóstico Líneas de Acción</title>
 
@@ -15,7 +16,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <script>
-        tailwind.config = {
+ https://duckduckgo.com/?q=objetivos+ods+2030&t=vivaldi&ia=images&iax=images&iai=https%3A%2F%2Fconsultoriaycalidad.com%2Fwp-content%2Fuploads%2F2022%2F11%2FODS-2030.jpg       tailwind.config = {
             theme: {
                 extend: {
                     colors: {
@@ -184,8 +185,12 @@
                         Equipos
                     </button>
                     <button id="tab-awards" class="tab-btn px-6 py-3 font-semibold rounded-lg transition-all">
-                        <i class="fas fa-award mr-2"></i>
-                        Premios
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Estadísticas
+                    </button>
+                    <button id="tab-podium" class="tab-btn px-6 py-3 font-semibold rounded-lg transition-all">
+                        <i class="fas fa-trophy mr-2"></i>
+                        Podio y Premios
                     </button>
                     <button id="tab-config" class="tab-btn px-6 py-3 font-semibold rounded-lg transition-all">
                         <i class="fas fa-cog mr-2"></i>
@@ -390,11 +395,21 @@
         <div id="awards-tab" style="display: none;">
             <section class="mb-8">
                 <div id="awardsContainer">
-                    <!-- Awards will be rendered by JavaScript -->
+                    <!-- Statistics will be rendered by JavaScript -->
                 </div>
             </section>
         </div>
         <!-- END AWARDS TAB -->
+
+        <!-- PODIUM TAB -->
+        <div id="podium-tab" style="display: none;">
+            <section class="mb-8">
+                <div id="podiumContainer">
+                    <!-- Podium will be rendered by JavaScript -->
+                </div>
+            </section>
+        </div>
+        <!-- END PODIUM TAB -->
 
         <!-- CONFIG TAB -->
         <div id="config-tab" style="display: none;">

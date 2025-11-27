@@ -818,7 +818,7 @@ function switchTab(tabName) {
     currentTab = tabName;
 
     // Update tab buttons
-    const tabs = ['individual', 'teams', 'awards', 'config'];
+    const tabs = ['individual', 'teams', 'awards', 'podium', 'config'];
     tabs.forEach(tab => {
         const btn = document.getElementById(`tab-${tab}`);
         if (btn) {
@@ -839,11 +839,13 @@ function renderCurrentTab() {
     const individualTab = document.getElementById('individual-tab');
     const teamsTab = document.getElementById('teams-tab');
     const awardsTab = document.getElementById('awards-tab');
+    const podiumTab = document.getElementById('podium-tab');
     const configTab = document.getElementById('config-tab');
 
     if (individualTab) individualTab.style.display = 'none';
     if (teamsTab) teamsTab.style.display = 'none';
     if (awardsTab) awardsTab.style.display = 'none';
+    if (podiumTab) podiumTab.style.display = 'none';
     if (configTab) configTab.style.display = 'none';
 
     // Show current tab
@@ -856,6 +858,9 @@ function renderCurrentTab() {
     } else if (currentTab === 'awards') {
         if (awardsTab) awardsTab.style.display = 'block';
         renderAwardsTab();
+    } else if (currentTab === 'podium') {
+        if (podiumTab) podiumTab.style.display = 'block';
+        renderPodiumTab();
     } else if (currentTab === 'config') {
         if (configTab) configTab.style.display = 'block';
         renderHouseConfig();
@@ -927,66 +932,153 @@ function renderAwardsTab() {
     if (!awardsContainer) return;
 
     const stats = awards.stats;
+    const teamStats = calculateTeamStats();
+    const winningTeam = teamStats.length > 0 ? teamStats[0] : null;
+
+    const mean = parseFloat(stats.mean);
+    const stdDev = parseFloat(stats.stdDev);
 
     let html = `
+        <!-- Awards Explanation -->
+        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl shadow-lg p-6 mb-8 border-2 border-yellow-200">
+            <h2 class="text-3xl font-bold mb-4 text-gray-800 text-center">
+                <i class="fas fa-trophy mr-2 text-yellow-500"></i>
+                Sistema de Premios
+            </h2>
+
+            <div class="bg-white rounded-lg p-5 mb-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-3">
+                    <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                    Condiciones para Obtener Premios
+                </h3>
+
+                <div class="space-y-3 text-sm text-gray-700">
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-star text-yellow-500 mt-1"></i>
+                        <div>
+                            <strong>Premio Excelencia (Top Performers):</strong>
+                            <p class="text-gray-600">Estudiantes en el cuartil superior (top 25%). Deben tener <strong>≥ ${stats.q3} puntos</strong> (Q3 o superior).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-users text-purple-500 mt-1"></i>
+                        <div>
+                            <strong>Premio Casa Ganadora:</strong>
+                            <p class="text-gray-600">Todos los estudiantes de la casa/equipo con mayor puntuación total. Los puntos de cada estudiante suman al total de su casa.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-bullseye text-blue-500 mt-1"></i>
+                        <div>
+                            <strong>Premio Consistencia:</strong>
+                            <p class="text-gray-600">Estudiantes con participación cercana al promedio, dentro de <strong>±0.5 desviaciones estándar</strong> de la media (${(mean - 0.5 * stdDev).toFixed(1)} - ${(mean + 0.5 * stdDev).toFixed(1)} pts).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3">
+                        <i class="fas fa-rocket text-green-500 mt-1"></i>
+                        <div>
+                            <strong>Premio En Progreso:</strong>
+                            <p class="text-gray-600">Estudiantes con participación activa que están mejorando. Reconocimiento motivacional para seguir adelante.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Statistical Summary -->
         <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
             <h3 class="text-2xl font-bold mb-4 text-gray-800">
                 <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
-                Análisis Estadístico
+                Análisis Estadístico de la Clase
             </h3>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-blue-50 rounded-lg p-4 text-center">
                     <p class="text-2xl font-bold text-blue-600">${stats.mean}</p>
                     <p class="text-sm text-gray-600">Media (μ)</p>
+                    <p class="text-xs text-gray-500 mt-1">Promedio de puntos</p>
                 </div>
                 <div class="bg-purple-50 rounded-lg p-4 text-center">
                     <p class="text-2xl font-bold text-purple-600">${stats.stdDev}</p>
                     <p class="text-sm text-gray-600">Desv. Estándar (σ)</p>
+                    <p class="text-xs text-gray-500 mt-1">Dispersión de datos</p>
                 </div>
                 <div class="bg-green-50 rounded-lg p-4 text-center">
                     <p class="text-2xl font-bold text-green-600">${stats.median}</p>
                     <p class="text-sm text-gray-600">Mediana</p>
+                    <p class="text-xs text-gray-500 mt-1">Valor central</p>
                 </div>
                 <div class="bg-orange-50 rounded-lg p-4 text-center">
                     <p class="text-2xl font-bold text-orange-600">${stats.min} - ${stats.max}</p>
                     <p class="text-sm text-gray-600">Rango</p>
+                    <p class="text-xs text-gray-500 mt-1">Mín - Máx</p>
                 </div>
             </div>
 
             <div class="bg-gray-50 rounded-lg p-4">
-                <p class="text-sm text-gray-700"><strong>Q1 (25%):</strong> ${stats.q1} pts | <strong>Q2 (50%):</strong> ${stats.median} pts | <strong>Q3 (75%):</strong> ${stats.q3} pts</p>
+                <p class="text-sm text-gray-700">
+                    <strong>Cuartiles:</strong>
+                    <span class="ml-2">Q1 (25%):</span> <strong>${stats.q1} pts</strong> |
+                    <span class="ml-2">Q2 (50%):</span> <strong>${stats.median} pts</strong> |
+                    <span class="ml-2">Q3 (75%):</span> <strong>${stats.q3} pts</strong>
+                </p>
+                <p class="text-xs text-gray-500 mt-2">
+                    <i class="fas fa-lightbulb mr-1"></i>
+                    Los cuartiles dividen la clase en 4 grupos de 25% cada uno según sus puntos
+                </p>
             </div>
         </div>
 
         <!-- Awards Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     `;
 
-    // Excellence Award
+    // Excellence Award (Top Performers)
     html += `
         <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-yellow-400">
             <div class="text-center mb-4">
                 <i class="fas fa-star text-5xl text-yellow-400 mb-2"></i>
                 <h3 class="text-xl font-bold text-gray-800">Premio Excelencia</h3>
-                <p class="text-sm text-gray-600">Top 25% (≥ Q3: ${stats.q3} pts)</p>
+                <p class="text-sm text-gray-600 font-semibold">Top 25% de la clase</p>
+                <p class="text-xs text-gray-500 mt-1">Condición: ≥ ${stats.q3} puntos (Q3)</p>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-3 max-h-64 overflow-y-auto">
                 ${awards.excellence.length > 0 ? awards.excellence.map(s => `
-                    <div class="bg-yellow-50 rounded-lg p-3">
+                    <div class="bg-yellow-50 rounded-lg p-3 border-l-4 border-yellow-400">
                         <p class="font-semibold text-gray-800">${s.name}</p>
                         <p class="text-sm text-gray-600">${s.reason}</p>
                     </div>
-                `).join('') : '<p class="text-center text-gray-500 text-sm">Aún no hay ganadores</p>'}
+                `).join('') : '<p class="text-center text-gray-500 text-sm py-4">Aún no hay ganadores</p>'}
             </div>
         </div>
     `;
 
-    // Consistent Award
-    const mean = parseFloat(stats.mean);
-    const stdDev = parseFloat(stats.stdDev);
+    // Winning House Award
+    html += `
+        <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-purple-400">
+            <div class="text-center mb-4">
+                <i class="fas fa-crown text-5xl text-purple-400 mb-2"></i>
+                <h3 class="text-xl font-bold text-gray-800">Premio Casa Ganadora</h3>
+                <p class="text-sm text-gray-600 font-semibold">Casa con más puntos totales</p>
+                ${winningTeam ? `<p class="text-xs text-gray-500 mt-1">Ganador: ${winningTeam.houseIcon} ${winningTeam.houseName} con ${winningTeam.points} pts</p>` : ''}
+            </div>
+
+            <div class="space-y-3 max-h-64 overflow-y-auto">
+                ${winningTeam && winningTeam.students.length > 0 ? winningTeam.students.map(s => `
+                    <div class="bg-purple-50 rounded-lg p-3 border-l-4 border-purple-400">
+                        <p class="font-semibold text-gray-800">${s.name}</p>
+                        <p class="text-sm text-gray-600">${s.points} pts - Miembro de ${winningTeam.houseIcon} ${winningTeam.houseName}</p>
+                    </div>
+                `).join('') : '<p class="text-center text-gray-500 text-sm py-4">Aún no hay ganadores</p>'}
+            </div>
+        </div>
+    `;
+
+    // Consistent Award (Within Standard Deviation)
     const lowerBound = (mean - 0.5 * stdDev).toFixed(1);
     const upperBound = (mean + 0.5 * stdDev).toFixed(1);
 
@@ -995,16 +1087,17 @@ function renderAwardsTab() {
             <div class="text-center mb-4">
                 <i class="fas fa-bullseye text-5xl text-blue-400 mb-2"></i>
                 <h3 class="text-xl font-bold text-gray-800">Premio Consistencia</h3>
-                <p class="text-sm text-gray-600">±0.5σ de media (${lowerBound} - ${upperBound} pts)</p>
+                <p class="text-sm text-gray-600 font-semibold">Cerca del promedio</p>
+                <p class="text-xs text-gray-500 mt-1">Condición: ${lowerBound} - ${upperBound} pts (μ ± 0.5σ)</p>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-3 max-h-64 overflow-y-auto">
                 ${awards.consistent.length > 0 ? awards.consistent.map(s => `
-                    <div class="bg-blue-50 rounded-lg p-3">
+                    <div class="bg-blue-50 rounded-lg p-3 border-l-4 border-blue-400">
                         <p class="font-semibold text-gray-800">${s.name}</p>
                         <p class="text-sm text-gray-600">${s.reason}</p>
                     </div>
-                `).join('') : '<p class="text-center text-gray-500 text-sm">Aún no hay ganadores</p>'}
+                `).join('') : '<p class="text-center text-gray-500 text-sm py-4">Aún no hay ganadores</p>'}
             </div>
         </div>
     `;
@@ -1015,16 +1108,17 @@ function renderAwardsTab() {
             <div class="text-center mb-4">
                 <i class="fas fa-rocket text-5xl text-green-400 mb-2"></i>
                 <h3 class="text-xl font-bold text-gray-800">Premio En Progreso</h3>
-                <p class="text-sm text-gray-600">¡Sigue participando!</p>
+                <p class="text-sm text-gray-600 font-semibold">Reconocimiento motivacional</p>
+                <p class="text-xs text-gray-500 mt-1">Para estudiantes activos en desarrollo</p>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-3 max-h-64 overflow-y-auto">
                 ${awards.progress.length > 0 ? awards.progress.map(s => `
-                    <div class="bg-green-50 rounded-lg p-3">
+                    <div class="bg-green-50 rounded-lg p-3 border-l-4 border-green-400">
                         <p class="font-semibold text-gray-800">${s.name}</p>
                         <p class="text-sm text-gray-600">${s.reason}</p>
                     </div>
-                `).join('') : '<p class="text-center text-gray-500 text-sm">Aún no hay ganadores</p>'}
+                `).join('') : '<p class="text-center text-gray-500 text-sm py-4">Aún no hay ganadores</p>'}
             </div>
         </div>
     `;
@@ -1431,11 +1525,13 @@ function attachEventListeners() {
     const tabIndividual = document.getElementById('tab-individual');
     const tabTeams = document.getElementById('tab-teams');
     const tabAwards = document.getElementById('tab-awards');
+    const tabPodium = document.getElementById('tab-podium');
     const tabConfig = document.getElementById('tab-config');
 
     if (tabIndividual) tabIndividual.addEventListener('click', () => switchTab('individual'));
     if (tabTeams) tabTeams.addEventListener('click', () => switchTab('teams'));
     if (tabAwards) tabAwards.addEventListener('click', () => switchTab('awards'));
+    if (tabPodium) tabPodium.addEventListener('click', () => switchTab('podium'));
     if (tabConfig) tabConfig.addEventListener('click', () => switchTab('config'));
 
     // Random selector
@@ -1650,4 +1746,324 @@ function changeStudentHouse(studentIndex, newHouse) {
         // Reset dropdown
         renderHouseConfig();
     }
+}
+
+// ==========================================
+// PODIUM AND PRIZES
+// ==========================================
+
+function renderPodiumTab() {
+    const podiumContainer = document.getElementById('podiumContainer');
+    if (!podiumContainer) return;
+
+    // Get sorted students by points
+    const sortedStudents = [...students].sort((a, b) => b.points - a.points);
+    const top3 = sortedStudents.slice(0, 3);
+
+    // Get team stats for winning house
+    const teamStats = calculateTeamStats();
+    const winningTeam = teamStats.length > 0 ? teamStats[0] : null;
+
+    // Get statistics for consistency prize
+    const stats = calculateStatistics();
+    const mean = parseFloat(stats.mean);
+    const stdDev = parseFloat(stats.stdDev);
+    const lowerBound = mean - stdDev;
+    const upperBound = mean + stdDev;
+
+    // Students within 1 standard deviation of mean (excluding top 3)
+    const consistentStudents = sortedStudents.filter(s =>
+        s.points >= lowerBound &&
+        s.points <= upperBound &&
+        !top3.includes(s) &&
+        s.participations.length > 0
+    );
+
+    let html = `
+        <!-- Prize Summary Header -->
+        <div class="bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 rounded-2xl shadow-2xl p-8 mb-8 text-white">
+            <h1 class="text-4xl font-bold text-center mb-4">
+                <i class="fas fa-trophy mr-3"></i>
+                Sistema de Premios
+            </h1>
+            <p class="text-center text-lg opacity-90">
+                Reconocimientos al final de cada módulo
+            </p>
+        </div>
+
+        <!-- Prize Rules -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">
+                <i class="fas fa-gift mr-2 text-purple-500"></i>
+                Premios Disponibles
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Top 3 Prize -->
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2 border-yellow-300">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-4 bg-yellow-400 rounded-full mb-3">
+                            <i class="fas fa-medal text-4xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Top 3 Performers</h3>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="bg-white rounded-lg p-3 border-l-4 border-yellow-400">
+                            <p class="font-bold text-yellow-600">1er Lugar</p>
+                            <p class="text-gray-700">Suscripción DALL-E + 3 pts extra</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border-l-4 border-gray-400">
+                            <p class="font-bold text-gray-600">2do Lugar</p>
+                            <p class="text-gray-700">3 puntos extra al final del módulo</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border-l-4 border-orange-400">
+                            <p class="font-bold text-orange-600">3er Lugar</p>
+                            <p class="text-gray-700">3 puntos extra al final del módulo</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-yellow-100 rounded-lg">
+                        <p class="text-xs text-gray-600">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Basado en puntos totales acumulados
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Consistency Prize -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-300">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-4 bg-blue-500 rounded-full mb-3">
+                            <i class="fas fa-bullseye text-4xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Premio Consistencia</h3>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="bg-white rounded-lg p-3">
+                            <p class="font-bold text-blue-600 mb-2">Recompensa</p>
+                            <p class="text-gray-700 text-lg font-semibold">10 puntos en una tarea</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-blue-100 rounded-lg">
+                        <p class="text-xs text-gray-600">
+                            <i class="fas fa-calculator mr-1"></i>
+                            Condición: Puntos dentro de ±1σ del promedio
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Rango actual: ${lowerBound.toFixed(1)} - ${upperBound.toFixed(1)} pts
+                        </p>
+                    </div>
+                </div>
+
+                <!-- House Prize -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-300">
+                    <div class="text-center mb-4">
+                        <div class="inline-block p-4 bg-purple-500 rounded-full mb-3">
+                            <i class="fas fa-crown text-4xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Casa Ganadora</h3>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="bg-white rounded-lg p-3">
+                            <p class="font-bold text-purple-600 mb-2">Recompensa por integrante</p>
+                            <p class="text-gray-700 text-lg font-semibold">2 puntos al final del módulo</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-purple-100 rounded-lg">
+                        <p class="text-xs text-gray-600">
+                            <i class="fas fa-users mr-1"></i>
+                            La casa con más puntos totales gana
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Todos los miembros reciben el premio
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Podium -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-8 text-gray-800 text-center">
+                <i class="fas fa-podium mr-2 text-yellow-500"></i>
+                Podio Actual - Top 3
+            </h2>
+
+            <div class="flex justify-center items-end space-x-4 mb-8">
+                <!-- 2nd Place -->
+                <div class="text-center">
+                    ${top3[1] ? `
+                        <div class="bg-gray-100 rounded-t-lg p-4 w-32">
+                            <div class="w-16 h-16 mx-auto bg-gray-400 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-user text-2xl text-white"></i>
+                            </div>
+                            <p class="font-bold text-gray-800 text-sm truncate">${top3[1].name.split(' ')[0]}</p>
+                            <p class="text-lg font-bold text-gray-600">${top3[1].points} pts</p>
+                        </div>
+                        <div class="bg-gray-400 text-white py-4 rounded-b-lg">
+                            <p class="text-3xl font-bold">2</p>
+                        </div>
+                    ` : `
+                        <div class="bg-gray-100 rounded-t-lg p-4 w-32 opacity-50">
+                            <div class="w-16 h-16 mx-auto bg-gray-300 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-question text-2xl text-white"></i>
+                            </div>
+                            <p class="font-bold text-gray-400 text-sm">---</p>
+                        </div>
+                        <div class="bg-gray-300 text-white py-4 rounded-b-lg">
+                            <p class="text-3xl font-bold">2</p>
+                        </div>
+                    `}
+                </div>
+
+                <!-- 1st Place -->
+                <div class="text-center -mt-8">
+                    ${top3[0] ? `
+                        <div class="relative">
+                            <i class="fas fa-crown text-yellow-400 text-3xl absolute -top-8 left-1/2 transform -translate-x-1/2"></i>
+                        </div>
+                        <div class="bg-yellow-50 rounded-t-lg p-4 w-36 border-2 border-yellow-400">
+                            <div class="w-20 h-20 mx-auto bg-yellow-400 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-user text-3xl text-white"></i>
+                            </div>
+                            <p class="font-bold text-gray-800 truncate">${top3[0].name.split(' ')[0]}</p>
+                            <p class="text-xl font-bold text-yellow-600">${top3[0].points} pts</p>
+                            <p class="text-xs text-green-600 mt-1">
+                                <i class="fas fa-gift mr-1"></i>DALL-E + 3pts
+                            </p>
+                        </div>
+                        <div class="bg-yellow-400 text-white py-6 rounded-b-lg">
+                            <p class="text-4xl font-bold">1</p>
+                        </div>
+                    ` : `
+                        <div class="bg-yellow-50 rounded-t-lg p-4 w-36 opacity-50">
+                            <div class="w-20 h-20 mx-auto bg-yellow-200 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-question text-3xl text-white"></i>
+                            </div>
+                            <p class="font-bold text-gray-400">---</p>
+                        </div>
+                        <div class="bg-yellow-200 text-white py-6 rounded-b-lg">
+                            <p class="text-4xl font-bold">1</p>
+                        </div>
+                    `}
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="text-center">
+                    ${top3[2] ? `
+                        <div class="bg-orange-50 rounded-t-lg p-4 w-32">
+                            <div class="w-16 h-16 mx-auto bg-orange-400 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-user text-2xl text-white"></i>
+                            </div>
+                            <p class="font-bold text-gray-800 text-sm truncate">${top3[2].name.split(' ')[0]}</p>
+                            <p class="text-lg font-bold text-orange-600">${top3[2].points} pts</p>
+                        </div>
+                        <div class="bg-orange-400 text-white py-3 rounded-b-lg">
+                            <p class="text-2xl font-bold">3</p>
+                        </div>
+                    ` : `
+                        <div class="bg-orange-50 rounded-t-lg p-4 w-32 opacity-50">
+                            <div class="w-16 h-16 mx-auto bg-orange-200 rounded-full flex items-center justify-center mb-2">
+                                <i class="fas fa-question text-2xl text-white"></i>
+                            </div>
+                            <p class="font-bold text-gray-400 text-sm">---</p>
+                        </div>
+                        <div class="bg-orange-200 text-white py-3 rounded-b-lg">
+                            <p class="text-2xl font-bold">3</p>
+                        </div>
+                    `}
+                </div>
+            </div>
+
+            <!-- Top 3 Details -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                ${top3.map((student, index) => {
+                    const medals = ['text-yellow-500', 'text-gray-400', 'text-orange-500'];
+                    const prizes = ['Suscripción DALL-E + 3 pts extra', '3 pts extra', '3 pts extra'];
+                    return `
+                        <div class="bg-gray-50 rounded-lg p-4 border-l-4 ${index === 0 ? 'border-yellow-400' : index === 1 ? 'border-gray-400' : 'border-orange-400'}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-medal ${medals[index]} text-2xl"></i>
+                                <div>
+                                    <p class="font-bold text-gray-800">${student.name}</p>
+                                    <p class="text-sm text-gray-600">${student.points} puntos</p>
+                                    <p class="text-xs text-green-600 font-semibold mt-1">
+                                        <i class="fas fa-gift mr-1"></i>${prizes[index]}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+
+        <!-- Winning House -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">
+                <i class="fas fa-crown mr-2 text-purple-500"></i>
+                Casa Ganadora
+            </h2>
+
+            ${winningTeam ? `
+                <div class="text-center mb-6">
+                    <div class="inline-block p-6 ${winningTeam.houseData.bgColor} rounded-full mb-4 border-4 ${winningTeam.houseData.borderColor}">
+                        <span class="text-6xl">${winningTeam.houseIcon}</span>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-800">${winningTeam.houseName}</h3>
+                    <p class="text-xl text-gray-600">${winningTeam.points} puntos totales</p>
+                    <p class="text-green-600 font-semibold mt-2">
+                        <i class="fas fa-gift mr-1"></i>
+                        +2 puntos por integrante al final del módulo
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    ${winningTeam.students.map(student => `
+                        <div class="bg-purple-50 rounded-lg p-4 text-center border border-purple-200">
+                            <p class="font-semibold text-gray-800">${student.name.split(' ')[0]}</p>
+                            <p class="text-sm text-gray-600">${student.points} pts</p>
+                            <p class="text-xs text-green-600 mt-1">+2 pts</p>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : `
+                <p class="text-center text-gray-500">Aún no hay datos suficientes</p>
+            `}
+        </div>
+
+        <!-- Consistency Winners -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">
+                <i class="fas fa-bullseye mr-2 text-blue-500"></i>
+                Premio Consistencia
+            </h2>
+
+            <div class="text-center mb-6">
+                <p class="text-gray-600 mb-2">
+                    Estudiantes con puntos entre <strong>${lowerBound.toFixed(1)}</strong> y <strong>${upperBound.toFixed(1)}</strong>
+                </p>
+                <p class="text-sm text-gray-500">(Media ± 1 desviación estándar)</p>
+                <p class="text-green-600 font-semibold mt-2">
+                    <i class="fas fa-gift mr-1"></i>
+                    10 puntos en una tarea
+                </p>
+            </div>
+
+            ${consistentStudents.length > 0 ? `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    ${consistentStudents.map(student => `
+                        <div class="bg-blue-50 rounded-lg p-4 text-center border border-blue-200">
+                            <i class="fas fa-check-circle text-blue-500 text-xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">${student.name.split(' ')[0]}</p>
+                            <p class="text-sm text-gray-600">${student.points} pts</p>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : `
+                <p class="text-center text-gray-500">Aún no hay estudiantes en este rango</p>
+            `}
+        </div>
+    `;
+
+    podiumContainer.innerHTML = html;
 }
