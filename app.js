@@ -1882,66 +1882,69 @@ function renderPodiumTab() {
         </div>
 
         <!-- Podium -->
-        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
-            <h2 class="text-2xl font-bold mb-8 text-gray-800 text-center">
-                <i class="fas fa-podium mr-2 text-yellow-500"></i>
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 mb-8">
+            <h2 class="text-2xl font-bold mb-10 text-gray-800 text-center">
+                <i class="fas fa-medal mr-2 text-yellow-500"></i>
                 Podio Actual - Top 3
             </h2>
 
-            <div class="flex justify-center items-end space-x-4 mb-8">
+            <div class="flex justify-center items-end space-x-6 md:space-x-10 mb-10 pt-8">
                 <!-- 2nd Place -->
                 <div class="text-center">
                     ${top3[1] ? `
-                        <div class="bg-gray-100 rounded-t-lg p-4 w-32">
-                            <div class="w-16 h-16 mx-auto bg-gray-400 rounded-full flex items-center justify-center mb-2">
-                                <i class="fas fa-user text-2xl text-white"></i>
+                        <div class="bg-gray-100 rounded-t-xl p-5 w-28 md:w-36">
+                            <div class="w-14 h-14 md:w-18 md:h-18 mx-auto bg-gray-400 rounded-full flex items-center justify-center mb-3 shadow-lg">
+                                <i class="fas fa-user text-xl md:text-2xl text-white"></i>
                             </div>
                             <p class="font-bold text-gray-800 text-sm truncate">${top3[1].name.split(' ')[0]}</p>
                             <p class="text-lg font-bold text-gray-600">${top3[1].points} pts</p>
+                            <p class="text-xs text-green-600 mt-1 font-semibold">+3 pts</p>
                         </div>
-                        <div class="bg-gray-400 text-white py-4 rounded-b-lg">
+                        <div class="bg-gray-400 text-white py-6 rounded-b-xl shadow-lg" style="height: 80px;">
                             <p class="text-3xl font-bold">2</p>
                         </div>
                     ` : `
-                        <div class="bg-gray-100 rounded-t-lg p-4 w-32 opacity-50">
-                            <div class="w-16 h-16 mx-auto bg-gray-300 rounded-full flex items-center justify-center mb-2">
-                                <i class="fas fa-question text-2xl text-white"></i>
+                        <div class="bg-gray-100 rounded-t-xl p-5 w-28 md:w-36 opacity-50">
+                            <div class="w-14 h-14 mx-auto bg-gray-300 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-question text-xl text-white"></i>
                             </div>
                             <p class="font-bold text-gray-400 text-sm">---</p>
+                            <p class="text-lg font-bold text-gray-400">- pts</p>
                         </div>
-                        <div class="bg-gray-300 text-white py-4 rounded-b-lg">
+                        <div class="bg-gray-300 text-white py-6 rounded-b-xl" style="height: 80px;">
                             <p class="text-3xl font-bold">2</p>
                         </div>
                     `}
                 </div>
 
                 <!-- 1st Place -->
-                <div class="text-center -mt-8">
+                <div class="text-center relative" style="margin-top: -40px;">
                     ${top3[0] ? `
-                        <div class="relative">
-                            <i class="fas fa-crown text-yellow-400 text-3xl absolute -top-8 left-1/2 transform -translate-x-1/2"></i>
+                        <div class="absolute -top-10 left-1/2 transform -translate-x-1/2">
+                            <i class="fas fa-crown text-yellow-400 text-4xl drop-shadow-lg"></i>
                         </div>
-                        <div class="bg-yellow-50 rounded-t-lg p-4 w-36 border-2 border-yellow-400">
-                            <div class="w-20 h-20 mx-auto bg-yellow-400 rounded-full flex items-center justify-center mb-2">
-                                <i class="fas fa-user text-3xl text-white"></i>
+                        <div class="bg-yellow-50 rounded-t-xl p-5 w-32 md:w-40 border-2 border-yellow-400 shadow-lg">
+                            <div class="w-16 h-16 md:w-20 md:h-20 mx-auto bg-yellow-400 rounded-full flex items-center justify-center mb-3 shadow-lg">
+                                <i class="fas fa-user text-2xl md:text-3xl text-white"></i>
                             </div>
                             <p class="font-bold text-gray-800 truncate">${top3[0].name.split(' ')[0]}</p>
                             <p class="text-xl font-bold text-yellow-600">${top3[0].points} pts</p>
-                            <p class="text-xs text-green-600 mt-1">
+                            <p class="text-xs text-green-600 mt-1 font-semibold">
                                 <i class="fas fa-gift mr-1"></i>DALL-E + 3pts
                             </p>
                         </div>
-                        <div class="bg-yellow-400 text-white py-6 rounded-b-lg">
+                        <div class="bg-yellow-400 text-white py-8 rounded-b-xl shadow-lg" style="height: 110px;">
                             <p class="text-4xl font-bold">1</p>
                         </div>
                     ` : `
-                        <div class="bg-yellow-50 rounded-t-lg p-4 w-36 opacity-50">
-                            <div class="w-20 h-20 mx-auto bg-yellow-200 rounded-full flex items-center justify-center mb-2">
-                                <i class="fas fa-question text-3xl text-white"></i>
+                        <div class="bg-yellow-50 rounded-t-xl p-5 w-32 md:w-40 opacity-50">
+                            <div class="w-16 h-16 mx-auto bg-yellow-200 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-question text-2xl text-white"></i>
                             </div>
                             <p class="font-bold text-gray-400">---</p>
+                            <p class="text-xl font-bold text-gray-400">- pts</p>
                         </div>
-                        <div class="bg-yellow-200 text-white py-6 rounded-b-lg">
+                        <div class="bg-yellow-200 text-white py-8 rounded-b-xl" style="height: 110px;">
                             <p class="text-4xl font-bold">1</p>
                         </div>
                     `}
@@ -1950,24 +1953,26 @@ function renderPodiumTab() {
                 <!-- 3rd Place -->
                 <div class="text-center">
                     ${top3[2] ? `
-                        <div class="bg-orange-50 rounded-t-lg p-4 w-32">
-                            <div class="w-16 h-16 mx-auto bg-orange-400 rounded-full flex items-center justify-center mb-2">
-                                <i class="fas fa-user text-2xl text-white"></i>
+                        <div class="bg-orange-50 rounded-t-xl p-5 w-28 md:w-36">
+                            <div class="w-14 h-14 md:w-18 md:h-18 mx-auto bg-orange-400 rounded-full flex items-center justify-center mb-3 shadow-lg">
+                                <i class="fas fa-user text-xl md:text-2xl text-white"></i>
                             </div>
                             <p class="font-bold text-gray-800 text-sm truncate">${top3[2].name.split(' ')[0]}</p>
                             <p class="text-lg font-bold text-orange-600">${top3[2].points} pts</p>
+                            <p class="text-xs text-green-600 mt-1 font-semibold">+3 pts</p>
                         </div>
-                        <div class="bg-orange-400 text-white py-3 rounded-b-lg">
+                        <div class="bg-orange-400 text-white py-4 rounded-b-xl shadow-lg" style="height: 60px;">
                             <p class="text-2xl font-bold">3</p>
                         </div>
                     ` : `
-                        <div class="bg-orange-50 rounded-t-lg p-4 w-32 opacity-50">
-                            <div class="w-16 h-16 mx-auto bg-orange-200 rounded-full flex items-center justify-center mb-2">
-                                <i class="fas fa-question text-2xl text-white"></i>
+                        <div class="bg-orange-50 rounded-t-xl p-5 w-28 md:w-36 opacity-50">
+                            <div class="w-14 h-14 mx-auto bg-orange-200 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-question text-xl text-white"></i>
                             </div>
                             <p class="font-bold text-gray-400 text-sm">---</p>
+                            <p class="text-lg font-bold text-gray-400">- pts</p>
                         </div>
-                        <div class="bg-orange-200 text-white py-3 rounded-b-lg">
+                        <div class="bg-orange-200 text-white py-4 rounded-b-xl" style="height: 60px;">
                             <p class="text-2xl font-bold">3</p>
                         </div>
                     `}
@@ -2032,35 +2037,60 @@ function renderPodiumTab() {
         </div>
 
         <!-- Consistency Winners -->
-        <div class="bg-white rounded-2xl shadow-xl p-8">
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
             <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">
                 <i class="fas fa-bullseye mr-2 text-blue-500"></i>
                 Premio Consistencia
             </h2>
 
-            <div class="text-center mb-6">
-                <p class="text-gray-600 mb-2">
-                    Estudiantes con puntos entre <strong>${lowerBound.toFixed(1)}</strong> y <strong>${upperBound.toFixed(1)}</strong>
-                </p>
-                <p class="text-sm text-gray-500">(Media ± 1 desviación estándar)</p>
-                <p class="text-green-600 font-semibold mt-2">
-                    <i class="fas fa-gift mr-1"></i>
-                    10 puntos en una tarea
-                </p>
+            <div class="bg-blue-50 rounded-xl p-6 mb-6">
+                <div class="text-center">
+                    <div class="inline-block p-3 bg-blue-500 rounded-full mb-3">
+                        <i class="fas fa-calculator text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Condición del Premio</h3>
+                    <p class="text-gray-700 mb-3">
+                        Estudiantes con puntos dentro de <strong>±1 desviación estándar</strong> del promedio
+                    </p>
+                    <div class="bg-white rounded-lg p-4 inline-block">
+                        <p class="text-sm text-gray-600">Rango actual:</p>
+                        <p class="text-2xl font-bold text-blue-600">
+                            ${lowerBound.toFixed(1)} - ${upperBound.toFixed(1)} pts
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">Media: ${mean.toFixed(1)} pts | σ: ${stdDev.toFixed(1)}</p>
+                    </div>
+                    <p class="text-green-600 font-bold mt-4 text-lg">
+                        <i class="fas fa-gift mr-2"></i>
+                        Premio: 10 puntos en una tarea
+                    </p>
+                    <p class="text-xs text-gray-500 mt-2">
+                        *No incluye a los Top 3 para mayor equidad
+                    </p>
+                </div>
             </div>
+
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">
+                <i class="fas fa-users mr-2"></i>
+                Estudiantes que Califican (${consistentStudents.length})
+            </h3>
 
             ${consistentStudents.length > 0 ? `
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     ${consistentStudents.map(student => `
-                        <div class="bg-blue-50 rounded-lg p-4 text-center border border-blue-200">
-                            <i class="fas fa-check-circle text-blue-500 text-xl mb-2"></i>
-                            <p class="font-semibold text-gray-800">${student.name.split(' ')[0]}</p>
+                        <div class="bg-blue-50 rounded-xl p-4 text-center border-2 border-blue-200 hover:border-blue-400 transition-all">
+                            <i class="fas fa-check-circle text-blue-500 text-2xl mb-2"></i>
+                            <p class="font-bold text-gray-800">${student.name.split(' ')[0]}</p>
                             <p class="text-sm text-gray-600">${student.points} pts</p>
+                            <p class="text-xs text-green-600 font-semibold mt-1">+10 pts tarea</p>
                         </div>
                     `).join('')}
                 </div>
             ` : `
-                <p class="text-center text-gray-500">Aún no hay estudiantes en este rango</p>
+                <div class="bg-gray-50 rounded-xl p-8 text-center">
+                    <i class="fas fa-hourglass-half text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500">Aún no hay estudiantes en este rango</p>
+                    <p class="text-xs text-gray-400 mt-2">Los estudiantes aparecerán aquí cuando sus puntos estén entre ${lowerBound.toFixed(1)} y ${upperBound.toFixed(1)}</p>
+                </div>
             `}
         </div>
     `;
