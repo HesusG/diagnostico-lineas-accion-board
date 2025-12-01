@@ -2270,6 +2270,7 @@ function loadGroupAndShowBoard(groupId) {
     populateStudentSelect();
     renderCurrentTab();
     updateStats();
+    attachEventListeners();
 }
 
 function updateBoardHeader(config) {
