@@ -2845,26 +2845,118 @@ function finishWizardSetup() {
 }
 
 // ==========================================
+// LEGACY DATA MIGRATION
+// ==========================================
+
+function migrateLegacyData() {
+    const legacyData = localStorage.getItem('participationBoard');
+    if (!legacyData) return false;
+
+    try {
+        const legacyStudents = JSON.parse(legacyData);
+        if (!Array.isArray(legacyStudents) || legacyStudents.length === 0) return false;
+
+        // Create group with legacy data
+        const groupId = 'group_legacy_' + Date.now();
+
+        // Build houses config from legacy HOUSES constant
+        const legacyHouses = {
+            FIRE: { key: 'fire', name: 'Fuego', icon: '🔥', color: '#EF4444' },
+            WATER: { key: 'water', name: 'Agua', icon: '💧', color: '#3B82F6' },
+            EARTH: { key: 'earth', name: 'Tierra', icon: '🌿', color: '#10B981' },
+            AIR: { key: 'air', name: 'Aire', icon: '💨', color: '#6B7280' }
+        };
+
+        const newGroup = {
+            id: groupId,
+            createdAt: new Date().toISOString(),
+            config: {
+                version: '2.0',
+                professor: {
+                    name: 'Profesor',
+                    subject: 'Diagnóstico Líneas de Acción',
+                    logo: null,
+                    periodStart: '',
+                    periodEnd: ''
+                },
+                groups: {
+                    enabled: true,
+                    count: 4,
+                    list: [
+                        { id: 1, name: 'Fuego', emoji: '🔥', color: '#EF4444' },
+                        { id: 2, name: 'Agua', emoji: '💧', color: '#3B82F6' },
+                        { id: 3, name: 'Tierra', emoji: '🌿', color: '#10B981' },
+                        { id: 4, name: 'Aire', emoji: '💨', color: '#6B7280' }
+                    ],
+                    assignmentMode: 'manual'
+                },
+                badges: {
+                    TOP_PARTICIPANT: true,
+                    CRITICAL_THINKER: true,
+                    BRAVE: true,
+                    STREAK: true,
+                    WINNING_HOUSE: true,
+                    EXCELLENCE: true,
+                    CONSISTENT: true,
+                    PROGRESS: true,
+                    SILENT: false,
+                    QUALITY_OVER_QUANTITY: false,
+                    COMEBACK_KID: false,
+                    PERFECTIONIST: false,
+                    NIGHT_OWL: false
+                },
+                prizes: { enabled: false, top1: '', top2: '', top3: '', consistency: '', team: '' },
+                houses: legacyHouses
+            },
+            students: legacyStudents
+        };
+
+        appGroups.push(newGroup);
+        saveGroupsToStorage();
+
+        console.log('Legacy data migrated successfully to group:', groupId);
+        return groupId;
+    } catch (e) {
+        console.error('Migration error:', e);
+        return false;
+    }
+}
+
+// ==========================================
 // OVERRIDE INITIALIZATION
 // ==========================================
 
-// Store original init function
-const originalInitializeApp = initializeApp;
-
-// Override to support multi-group
+// Override to support multi-group with proper legacy detection
 function initializeApp() {
-    // Check if we should use multi-group system
     const hasGroups = localStorage.getItem(GROUPS_KEY);
     const hasLegacyData = localStorage.getItem('participationBoard');
 
-    if (hasGroups || !hasLegacyData) {
-        // Use new multi-group system
+    // Check if there are valid groups (not empty string or empty array)
+    let hasValidGroups = false;
+    if (hasGroups) {
+        try {
+            const groups = JSON.parse(hasGroups);
+            hasValidGroups = Array.isArray(groups) && groups.length > 0;
+        } catch (e) {
+            hasValidGroups = false;
+        }
+    }
+
+    if (hasValidGroups) {
+        // Has groups in new system
         initializeMultiGroupApp();
+    } else if (hasLegacyData) {
+        // Has legacy data - migrate it to new system
+        loadGroupsFromStorage(); // Initialize appGroups array
+        const migratedGroupId = migrateLegacyData();
+        if (migratedGroupId) {
+            loadGroupAndShowBoard(migratedGroupId);
+        } else {
+            initializeMultiGroupApp();
+        }
     } else {
-        // Legacy mode - existing single group data
-        // Show the board directly with existing data
-        showMainBoard();
-        originalInitializeApp();
+        // No data - show welcome screen
+        initializeMultiGroupApp();
     }
 }
 
