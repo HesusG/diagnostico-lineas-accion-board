@@ -766,11 +766,6 @@ function renderTable() {
                         title="Opinión Insightful +1pt">
                     <i class="fas fa-lightbulb text-xs"></i>
                 </button>
-                <button onclick="addPoints(${actualIndex}, 'team_mvp', 2)"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs transition-all"
-                        title="MVP Trabajo en Equipo +2pts">
-                    <i class="fas fa-award text-xs"></i>
-                </button>
                 <button onclick="openStudentModal(${actualIndex})"
                         class="bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-1 rounded text-xs transition-all"
                         title="Ver Perfil">
@@ -2097,3 +2092,800 @@ function renderPodiumTab() {
 
     podiumContainer.innerHTML = html;
 }
+
+// ==========================================
+// MULTI-GROUP SYSTEM
+// ==========================================
+
+// Keys for LocalStorage
+const GROUPS_KEY = 'participationGroups';
+const CURRENT_GROUP_KEY = 'currentGroupId';
+
+// App state for multi-group
+let appGroups = [];
+let currentGroupId = null;
+
+// Available emojis for teams
+const TEAM_EMOJIS = ['🔥', '💧', '🌿', '💨', '⚡', '❄️', '🌟', '🌙', '🦁', '🐺', '🦅', '🐉', '🎯', '🏆', '💎', '🌈'];
+
+// Default team colors
+const TEAM_COLORS = [
+    '#EF4444', '#3B82F6', '#10B981', '#6B7280',
+    '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6'
+];
+
+// Badge definitions for wizard (without MVP)
+const WIZARD_BADGES = {
+    TOP_PARTICIPANT: { name: 'Top Participante', description: 'Mayor cantidad de puntos', default: true },
+    CRITICAL_THINKER: { name: 'Pensador Crítico', description: '3+ opiniones insightful', default: true },
+    BRAVE: { name: 'Valiente', description: 'Primera participación voluntaria del día', default: true },
+    STREAK: { name: 'Racha Activa', description: '3+ días consecutivos participando', default: true },
+    WINNING_HOUSE: { name: 'Casa Ganadora', description: 'Miembro del equipo ganador', default: true },
+    EXCELLENCE: { name: 'Excelencia', description: 'Top 25% de la clase', default: true },
+    CONSISTENT: { name: 'Consistencia', description: 'Cerca del promedio (±0.5σ)', default: true },
+    PROGRESS: { name: 'En Progreso', description: 'Participación activa, mejorando', default: true },
+    SILENT: { name: 'Silencioso', description: '5 días sin participar', default: false },
+    QUALITY_OVER_QUANTITY: { name: 'Habla Poco pero Voluntario', description: 'Pocas pero voluntarias', default: false },
+    COMEBACK_KID: { name: 'Come Back Kid', description: 'Regresa después de 7+ días', default: false },
+    PERFECTIONIST: { name: 'Perfeccionista', description: 'Solo participaciones voluntarias', default: false },
+    NIGHT_OWL: { name: 'Noctámbulo', description: 'Última participación del día', default: false }
+};
+
+// Wizard state
+let wizardStep = 1;
+let wizardData = {
+    professor: { name: '', subject: '', logo: null, periodStart: '', periodEnd: '' },
+    students: [],
+    teams: { enabled: false, count: 4, list: [], assignmentMode: 'random' },
+    badges: {},
+    prizes: { enabled: true, top1: '', top2: '', top3: '', consistency: '', team: '' }
+};
+let wizardStudentIdCounter = 1;
+
+// ==========================================
+// APP INITIALIZATION WITH MULTI-GROUP
+// ==========================================
+
+function initializeMultiGroupApp() {
+    loadGroupsFromStorage();
+
+    // Check if there are any groups
+    if (appGroups.length === 0) {
+        // No groups, show welcome screen
+        showWelcomeScreen();
+    } else {
+        // Try to load current group
+        const savedGroupId = localStorage.getItem(CURRENT_GROUP_KEY);
+        if (savedGroupId && appGroups.find(g => g.id === savedGroupId)) {
+            currentGroupId = savedGroupId;
+            loadGroupAndShowBoard(savedGroupId);
+        } else {
+            // Show welcome with existing groups
+            showWelcomeScreen();
+        }
+    }
+}
+
+function loadGroupsFromStorage() {
+    try {
+        const saved = localStorage.getItem(GROUPS_KEY);
+        if (saved) {
+            appGroups = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.error('Error loading groups:', e);
+        appGroups = [];
+    }
+}
+
+function saveGroupsToStorage() {
+    try {
+        localStorage.setItem(GROUPS_KEY, JSON.stringify(appGroups));
+    } catch (e) {
+        console.error('Error saving groups:', e);
+        alert('Error guardando datos. Verifica el espacio disponible.');
+    }
+}
+
+// ==========================================
+// SCREEN MANAGEMENT
+// ==========================================
+
+function showWelcomeScreen() {
+    document.getElementById('welcome-screen').classList.remove('hidden');
+    document.getElementById('setup-wizard').classList.add('hidden');
+    document.getElementById('main-board').classList.add('hidden');
+
+    renderExistingGroups();
+}
+
+function showSetupWizard() {
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('setup-wizard').classList.remove('hidden');
+    document.getElementById('main-board').classList.add('hidden');
+
+    resetWizardData();
+    wizardStep = 1;
+    updateWizardUI();
+    initializeBadgesList();
+}
+
+function showMainBoard() {
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('setup-wizard').classList.add('hidden');
+    document.getElementById('main-board').classList.remove('hidden');
+}
+
+function renderExistingGroups() {
+    const section = document.getElementById('existing-groups-section');
+    const list = document.getElementById('existing-groups-list');
+
+    if (appGroups.length === 0) {
+        section.classList.add('hidden');
+        return;
+    }
+
+    section.classList.remove('hidden');
+    list.innerHTML = appGroups.map(group => `
+        <button onclick="loadGroupAndShowBoard('${group.id}')"
+                class="w-full text-left p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-md transition-all flex items-center space-x-4">
+            ${group.config.professor.logo ?
+                `<img src="${group.config.professor.logo}" class="w-12 h-12 rounded-full object-cover">` :
+                `<div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                    <i class="fas fa-users text-white"></i>
+                </div>`
+            }
+            <div class="flex-1">
+                <h4 class="font-bold text-gray-800">${group.config.professor.subject}</h4>
+                <p class="text-sm text-gray-600">${group.config.professor.name}</p>
+                <p class="text-xs text-gray-400">${group.students.length} estudiantes</p>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="event.stopPropagation(); deleteGroup('${group.id}')"
+                        class="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </button>
+    `).join('');
+}
+
+function loadGroupAndShowBoard(groupId) {
+    const group = appGroups.find(g => g.id === groupId);
+    if (!group) return;
+
+    currentGroupId = groupId;
+    localStorage.setItem(CURRENT_GROUP_KEY, groupId);
+
+    // Load group data into global variables
+    students = group.students;
+
+    // Update header with group info
+    updateBoardHeader(group.config);
+
+    // Show the board
+    showMainBoard();
+
+    // Initialize board
+    populateStudentSelect();
+    renderCurrentTab();
+    updateStats();
+}
+
+function updateBoardHeader(config) {
+    const header = document.getElementById('board-header');
+    if (!header) return;
+
+    let logoHtml = '';
+    if (config.professor.logo) {
+        logoHtml = `<img src="${config.professor.logo}" class="w-12 h-12 rounded-full object-cover mr-4">`;
+    }
+
+    let periodHtml = '';
+    if (config.professor.periodStart && config.professor.periodEnd) {
+        const start = new Date(config.professor.periodStart);
+        const end = new Date(config.professor.periodEnd);
+        const today = new Date();
+        const daysLeft = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+        periodHtml = `
+            <p class="text-sm text-blue-100 mt-1">
+                ${start.toLocaleDateString('es-MX')} - ${end.toLocaleDateString('es-MX')}
+                ${daysLeft > 0 ? `(${daysLeft} días restantes)` : ''}
+            </p>
+        `;
+    }
+
+    header.innerHTML = `
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-center">
+                ${logoHtml}
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold">
+                        <i class="fas fa-trophy mr-2"></i>
+                        ${config.professor.subject}
+                    </h1>
+                    <p class="text-blue-100 mt-1">${config.professor.name}</p>
+                    ${periodHtml}
+                </div>
+            </div>
+            <div class="flex justify-center mt-4">
+                <button onclick="showWelcomeScreen()" class="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all">
+                    <i class="fas fa-exchange-alt mr-2"></i>Cambiar Grupo
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function deleteGroup(groupId) {
+    if (!confirm('¿Estás seguro de eliminar este grupo? Esta acción no se puede deshacer.')) return;
+    if (!confirm('¿Realmente quieres eliminar todos los datos de este grupo?')) return;
+
+    appGroups = appGroups.filter(g => g.id !== groupId);
+    saveGroupsToStorage();
+
+    if (currentGroupId === groupId) {
+        currentGroupId = null;
+        localStorage.removeItem(CURRENT_GROUP_KEY);
+    }
+
+    showWelcomeScreen();
+}
+
+// ==========================================
+// WIZARD FUNCTIONS
+// ==========================================
+
+function showGroupSelector() {
+    showSetupWizard();
+}
+
+function resetWizardData() {
+    wizardData = {
+        professor: { name: '', subject: '', logo: null, periodStart: '', periodEnd: '' },
+        students: [],
+        teams: { enabled: false, count: 4, list: [], assignmentMode: 'random' },
+        badges: {},
+        prizes: { enabled: true, top1: '', top2: '', top3: '', consistency: '', team: '' }
+    };
+    wizardStudentIdCounter = 1;
+
+    // Reset form fields
+    const fields = ['professor-name', 'subject-name', 'period-start', 'period-end',
+                    'prize-1st', 'prize-2nd', 'prize-3rd', 'prize-consistency', 'prize-team'];
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    // Reset logo preview
+    const logoPreview = document.getElementById('logo-preview');
+    if (logoPreview) {
+        logoPreview.innerHTML = '<i class="fas fa-camera text-3xl text-gray-400"></i>';
+    }
+
+    // Reset student list
+    const studentsList = document.getElementById('wizard-students-list');
+    if (studentsList) {
+        studentsList.innerHTML = `
+            <p class="text-center text-gray-400 py-8" id="no-students-msg">
+                <i class="fas fa-user-plus text-4xl mb-2 block"></i>
+                Aún no hay estudiantes agregados
+            </p>
+        `;
+    }
+
+    // Reset student count
+    const countEl = document.getElementById('wizard-student-count');
+    if (countEl) countEl.textContent = '0';
+}
+
+function updateWizardUI() {
+    // Update step indicator
+    document.getElementById('wizard-step-indicator').textContent = `Paso ${wizardStep} de 5`;
+
+    // Update progress bar
+    document.getElementById('wizard-progress-bar').style.width = `${wizardStep * 20}%`;
+
+    // Show/hide steps
+    for (let i = 1; i <= 5; i++) {
+        const step = document.getElementById(`wizard-step-${i}`);
+        if (step) {
+            step.classList.toggle('hidden', i !== wizardStep);
+        }
+    }
+
+    // Show/hide navigation buttons
+    document.getElementById('wizard-prev').classList.toggle('hidden', wizardStep === 1);
+    document.getElementById('wizard-next').classList.toggle('hidden', wizardStep === 5);
+    document.getElementById('wizard-finish').classList.toggle('hidden', wizardStep !== 5);
+
+    // Update team prize section visibility based on teams enabled
+    if (wizardStep === 5) {
+        const teamPrizeSection = document.getElementById('prize-team-section');
+        if (teamPrizeSection) {
+            teamPrizeSection.classList.toggle('hidden', !wizardData.teams.enabled);
+        }
+    }
+}
+
+function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.match(/image\/(jpeg|jpg|png)/i)) {
+        alert('Por favor selecciona un archivo JPG, JPEG o PNG');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Create image to resize
+        const img = new Image();
+        img.onload = function() {
+            // Calculate new dimensions (max 200px maintaining aspect ratio)
+            let width = img.width;
+            let height = img.height;
+            const maxSize = 200;
+
+            if (width > height) {
+                if (width > maxSize) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+            }
+
+            // Create canvas and resize
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Convert to base64
+            const resizedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+            wizardData.professor.logo = resizedBase64;
+
+            // Update preview
+            const preview = document.getElementById('logo-preview');
+            preview.innerHTML = `<img src="${resizedBase64}" class="w-full h-full object-cover">`;
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function addStudentToWizardList() {
+    const nameInput = document.getElementById('new-student-name');
+    const idInput = document.getElementById('new-student-id');
+    const noMatricula = document.getElementById('no-matricula');
+
+    const name = nameInput.value.trim();
+    if (!name) {
+        alert('Por favor ingresa el nombre del estudiante');
+        return;
+    }
+
+    // Generate or use provided ID
+    let studentId;
+    if (noMatricula && noMatricula.checked) {
+        studentId = `EST-${String(wizardStudentIdCounter).padStart(3, '0')}`;
+        wizardStudentIdCounter++;
+    } else {
+        studentId = idInput.value.trim();
+        if (!studentId) {
+            alert('Por favor ingresa la matrícula o marca "Sin matrícula"');
+            return;
+        }
+    }
+
+    // Check for duplicate
+    if (wizardData.students.some(s => s.id === studentId)) {
+        alert('Ya existe un estudiante con esa matrícula');
+        return;
+    }
+
+    // Add student
+    wizardData.students.push({ name, id: studentId });
+
+    // Clear inputs
+    nameInput.value = '';
+    idInput.value = '';
+
+    // Update list
+    renderWizardStudentsList();
+}
+
+function removeStudentFromWizard(index) {
+    wizardData.students.splice(index, 1);
+    renderWizardStudentsList();
+}
+
+function renderWizardStudentsList() {
+    const list = document.getElementById('wizard-students-list');
+    const countEl = document.getElementById('wizard-student-count');
+
+    countEl.textContent = wizardData.students.length;
+
+    if (wizardData.students.length === 0) {
+        list.innerHTML = `
+            <p class="text-center text-gray-400 py-8" id="no-students-msg">
+                <i class="fas fa-user-plus text-4xl mb-2 block"></i>
+                Aún no hay estudiantes agregados
+            </p>
+        `;
+        return;
+    }
+
+    list.innerHTML = wizardData.students.map((student, index) => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div>
+                <span class="font-semibold text-gray-800">${student.name}</span>
+                <span class="text-sm text-gray-500 ml-2">(${student.id})</span>
+            </div>
+            <button onclick="removeStudentFromWizard(${index})" class="text-red-500 hover:text-red-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function toggleMatriculaInput() {
+    const noMatricula = document.getElementById('no-matricula');
+    const idInput = document.getElementById('new-student-id');
+
+    if (noMatricula.checked) {
+        idInput.disabled = true;
+        idInput.value = '';
+        idInput.placeholder = 'Se generará automáticamente';
+    } else {
+        idInput.disabled = false;
+        idInput.placeholder = 'Matrícula';
+    }
+}
+
+function toggleTeamsConfig() {
+    const enabled = document.getElementById('enable-teams').checked;
+    wizardData.teams.enabled = enabled;
+
+    const config = document.getElementById('teams-config');
+    config.classList.toggle('hidden', !enabled);
+
+    if (enabled) {
+        updateTeamsCount(wizardData.teams.count);
+    }
+}
+
+function updateTeamsCount(count) {
+    count = parseInt(count);
+    wizardData.teams.count = count;
+    document.getElementById('teams-count-display').textContent = count;
+
+    // Generate team list
+    renderWizardTeamsList(count);
+}
+
+function renderWizardTeamsList(count) {
+    const list = document.getElementById('wizard-teams-list');
+    const defaultNames = ['Fuego', 'Agua', 'Tierra', 'Aire', 'Rayo', 'Hielo', 'Luz', 'Sombra'];
+
+    // Initialize teams if needed
+    while (wizardData.teams.list.length < count) {
+        const idx = wizardData.teams.list.length;
+        wizardData.teams.list.push({
+            id: idx + 1,
+            name: defaultNames[idx] || `Equipo ${idx + 1}`,
+            emoji: TEAM_EMOJIS[idx] || '🎯',
+            color: TEAM_COLORS[idx] || '#6B7280'
+        });
+    }
+
+    // Trim if count reduced
+    wizardData.teams.list = wizardData.teams.list.slice(0, count);
+
+    list.innerHTML = wizardData.teams.list.map((team, index) => `
+        <div class="bg-gray-50 rounded-xl p-4 border-2" style="border-color: ${team.color}">
+            <div class="grid grid-cols-12 gap-3 items-center">
+                <div class="col-span-2">
+                    <button type="button" onclick="openEmojiPicker(${index})"
+                            class="w-12 h-12 text-2xl bg-white rounded-lg border-2 border-gray-300 hover:border-purple-400 transition-all flex items-center justify-center">
+                        ${team.emoji}
+                    </button>
+                </div>
+                <div class="col-span-6">
+                    <input type="text" value="${team.name}" onchange="updateTeamName(${index}, this.value)"
+                           class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                           placeholder="Nombre del equipo">
+                </div>
+                <div class="col-span-4">
+                    <input type="color" value="${team.color}" onchange="updateTeamColor(${index}, this.value)"
+                           class="w-full h-10 rounded-lg cursor-pointer">
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateTeamName(index, name) {
+    wizardData.teams.list[index].name = name;
+}
+
+function updateTeamColor(index, color) {
+    wizardData.teams.list[index].color = color;
+    renderWizardTeamsList(wizardData.teams.count);
+}
+
+function openEmojiPicker(teamIndex) {
+    // Create emoji picker modal
+    const existingPicker = document.getElementById('emoji-picker-modal');
+    if (existingPicker) existingPicker.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'emoji-picker-modal';
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
+            <h3 class="text-lg font-bold mb-4 text-center">Selecciona un Emoji</h3>
+            <div class="grid grid-cols-8 gap-2">
+                ${TEAM_EMOJIS.map(emoji => `
+                    <button onclick="selectTeamEmoji(${teamIndex}, '${emoji}')"
+                            class="text-2xl p-2 hover:bg-gray-100 rounded-lg transition-all">
+                        ${emoji}
+                    </button>
+                `).join('')}
+            </div>
+            <button onclick="document.getElementById('emoji-picker-modal').remove()"
+                    class="w-full mt-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                Cancelar
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+function selectTeamEmoji(teamIndex, emoji) {
+    wizardData.teams.list[teamIndex].emoji = emoji;
+    document.getElementById('emoji-picker-modal').remove();
+    renderWizardTeamsList(wizardData.teams.count);
+}
+
+function initializeBadgesList() {
+    const list = document.getElementById('wizard-badges-list');
+
+    // Initialize badges with defaults
+    Object.entries(WIZARD_BADGES).forEach(([key, badge]) => {
+        wizardData.badges[key] = badge.default;
+    });
+
+    list.innerHTML = Object.entries(WIZARD_BADGES).map(([key, badge]) => `
+        <label class="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-all">
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" ${badge.default ? 'checked' : ''}
+                       onchange="wizardData.badges['${key}'] = this.checked"
+                       class="form-checkbox h-5 w-5 text-yellow-500 rounded">
+                <div>
+                    <span class="font-semibold text-gray-800">${badge.name}</span>
+                    <p class="text-sm text-gray-500">${badge.description}</p>
+                </div>
+            </div>
+            <span class="text-xs px-2 py-1 rounded ${badge.default ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}">
+                ${badge.default ? 'Recomendado' : 'Opcional'}
+            </span>
+        </label>
+    `).join('');
+}
+
+function togglePrizesConfig() {
+    const enabled = document.getElementById('enable-prizes').checked;
+    wizardData.prizes.enabled = enabled;
+
+    const config = document.getElementById('prizes-config');
+    config.classList.toggle('hidden', !enabled);
+}
+
+function prevWizardStep() {
+    if (wizardStep > 1) {
+        saveCurrentStepData();
+        wizardStep--;
+        updateWizardUI();
+    }
+}
+
+function nextWizardStep() {
+    if (!validateCurrentStep()) return;
+
+    saveCurrentStepData();
+
+    if (wizardStep < 5) {
+        wizardStep++;
+        updateWizardUI();
+
+        // Initialize step-specific content
+        if (wizardStep === 4) {
+            initializeBadgesList();
+        }
+    }
+}
+
+function validateCurrentStep() {
+    switch (wizardStep) {
+        case 1:
+            const name = document.getElementById('professor-name').value.trim();
+            const subject = document.getElementById('subject-name').value.trim();
+            if (!name || !subject) {
+                alert('Por favor completa el nombre del profesor y el nombre del grupo/materia');
+                return false;
+            }
+            return true;
+
+        case 2:
+            if (wizardData.students.length < 2) {
+                alert('Por favor agrega al menos 2 estudiantes');
+                return false;
+            }
+            return true;
+
+        default:
+            return true;
+    }
+}
+
+function saveCurrentStepData() {
+    switch (wizardStep) {
+        case 1:
+            wizardData.professor.name = document.getElementById('professor-name').value.trim();
+            wizardData.professor.subject = document.getElementById('subject-name').value.trim();
+            wizardData.professor.periodStart = document.getElementById('period-start').value;
+            wizardData.professor.periodEnd = document.getElementById('period-end').value;
+            break;
+
+        case 3:
+            wizardData.teams.enabled = document.getElementById('enable-teams').checked;
+            const assignmentMode = document.querySelector('input[name="assignment-mode"]:checked');
+            if (assignmentMode) {
+                wizardData.teams.assignmentMode = assignmentMode.value;
+            }
+            break;
+
+        case 5:
+            wizardData.prizes.enabled = document.getElementById('enable-prizes').checked;
+            wizardData.prizes.top1 = document.getElementById('prize-1st').value.trim();
+            wizardData.prizes.top2 = document.getElementById('prize-2nd').value.trim();
+            wizardData.prizes.top3 = document.getElementById('prize-3rd').value.trim();
+            wizardData.prizes.consistency = document.getElementById('prize-consistency').value.trim();
+            wizardData.prizes.team = document.getElementById('prize-team')?.value.trim() || '';
+            break;
+    }
+}
+
+function finishWizardSetup() {
+    saveCurrentStepData();
+
+    // Create new group
+    const groupId = 'group_' + Date.now();
+
+    // Prepare houses/teams
+    let groupHouses = null;
+    if (wizardData.teams.enabled && wizardData.teams.list.length > 0) {
+        groupHouses = {};
+        wizardData.teams.list.forEach((team, idx) => {
+            const key = `TEAM_${idx + 1}`;
+            groupHouses[key] = {
+                key: key.toLowerCase(),
+                name: team.name,
+                icon: team.emoji,
+                color: team.color,
+                bgColor: `bg-[${team.color}]`,
+                textColor: `text-[${team.color}]`,
+                borderColor: `border-[${team.color}]`
+            };
+        });
+    }
+
+    // Assign students to teams (if enabled)
+    let processedStudents = wizardData.students.map(s => ({
+        ...s,
+        points: 0,
+        participations: [],
+        badges: [],
+        house: null
+    }));
+
+    if (wizardData.teams.enabled && groupHouses) {
+        const houseKeys = Object.values(groupHouses).map(h => h.key);
+
+        if (wizardData.teams.assignmentMode === 'random') {
+            // Shuffle and assign
+            const shuffled = [...processedStudents].sort(() => Math.random() - 0.5);
+            shuffled.forEach((student, idx) => {
+                student.house = houseKeys[idx % houseKeys.length];
+            });
+            processedStudents = shuffled;
+        }
+        // For 'manual' mode, house will be null and can be assigned later
+    }
+
+    // Create group object
+    const newGroup = {
+        id: groupId,
+        createdAt: new Date().toISOString(),
+        config: {
+            version: '2.0',
+            professor: wizardData.professor,
+            groups: {
+                enabled: wizardData.teams.enabled,
+                count: wizardData.teams.count,
+                list: wizardData.teams.list,
+                assignmentMode: wizardData.teams.assignmentMode
+            },
+            badges: wizardData.badges,
+            prizes: wizardData.prizes,
+            houses: groupHouses
+        },
+        students: processedStudents
+    };
+
+    // Add to groups
+    appGroups.push(newGroup);
+    saveGroupsToStorage();
+
+    // Load the new group
+    loadGroupAndShowBoard(groupId);
+
+    showNotification('¡Grupo creado exitosamente!', 'success');
+}
+
+// ==========================================
+// OVERRIDE INITIALIZATION
+// ==========================================
+
+// Store original init function
+const originalInitializeApp = initializeApp;
+
+// Override to support multi-group
+function initializeApp() {
+    // Check if we should use multi-group system
+    const hasGroups = localStorage.getItem(GROUPS_KEY);
+    const hasLegacyData = localStorage.getItem('participationBoard');
+
+    if (hasGroups || !hasLegacyData) {
+        // Use new multi-group system
+        initializeMultiGroupApp();
+    } else {
+        // Legacy mode - existing single group data
+        // Show the board directly with existing data
+        showMainBoard();
+        originalInitializeApp();
+    }
+}
+
+// ==========================================
+// SAVE OVERRIDE FOR MULTI-GROUP
+// ==========================================
+
+// Store original save function
+const originalSaveToLocalStorage = saveToLocalStorage;
+
+// Override to support multi-group
+saveToLocalStorage = function() {
+    if (currentGroupId) {
+        // Update the group's students
+        const group = appGroups.find(g => g.id === currentGroupId);
+        if (group) {
+            group.students = students;
+            saveGroupsToStorage();
+        }
+    } else {
+        // Legacy mode
+        originalSaveToLocalStorage();
+    }
+};

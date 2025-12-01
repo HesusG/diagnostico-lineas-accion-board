@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta cha
-    rset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Participación - Diagnóstico Líneas de Acción</title>
 
@@ -16,7 +15,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <script>
- https://duckduckgo.com/?q=objetivos+ods+2030&t=vivaldi&ia=images&iax=images&iai=https%3A%2F%2Fconsultoriaycalidad.com%2Fwp-content%2Fuploads%2F2022%2F11%2FODS-2030.jpg       tailwind.config = {
+        tailwind.config = {
             theme: {
                 extend: {
                     colors: {
@@ -33,8 +32,419 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
+    <!-- ============================================ -->
+    <!-- WELCOME SCREEN -->
+    <!-- ============================================ -->
+    <div id="welcome-screen" class="min-h-screen flex items-center justify-center p-4 hidden">
+        <div class="max-w-2xl w-full">
+            <!-- Logo/Icon -->
+            <div class="text-center mb-8">
+                <div class="inline-block p-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6 shadow-2xl">
+                    <i class="fas fa-trophy text-6xl text-white"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                    Tablero de Participación
+                </h1>
+                <p class="text-xl text-gray-600">
+                    Sistema gamificado para gestionar la participación en clase
+                </p>
+            </div>
+
+            <!-- Warning Card -->
+            <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-6 mb-8">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-3xl text-yellow-500"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-yellow-800 mb-2">
+                            Importante: Almacenamiento Local
+                        </h3>
+                        <p class="text-yellow-700 mb-3">
+                            Esta aplicación guarda los datos en el <strong>navegador de tu computadora</strong> (LocalStorage).
+                        </p>
+                        <ul class="text-sm text-yellow-700 space-y-1">
+                            <li><i class="fas fa-times-circle mr-2 text-red-500"></i>Si cambias de computadora, los datos <strong>NO</strong> estarán disponibles</li>
+                            <li><i class="fas fa-times-circle mr-2 text-red-500"></i>Si cambias de navegador, los datos <strong>NO</strong> estarán disponibles</li>
+                            <li><i class="fas fa-times-circle mr-2 text-red-500"></i>Si limpias el caché del navegador, los datos se <strong>perderán</strong></li>
+                        </ul>
+                        <div class="mt-4 p-3 bg-green-100 rounded-lg border border-green-300">
+                            <p class="text-green-800 font-semibold">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Usa la función de <strong>Exportar</strong> regularmente para hacer respaldos
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div id="welcome-buttons" class="space-y-4">
+                <button onclick="showGroupSelector()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl text-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    <i class="fas fa-plus-circle mr-3"></i>
+                    Crear Nuevo Grupo
+                </button>
+            </div>
+
+            <!-- Existing Groups (shown if there are groups) -->
+            <div id="existing-groups-section" class="mt-8 hidden">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 text-center">O selecciona un grupo existente:</h3>
+                <div id="existing-groups-list" class="space-y-3">
+                    <!-- Groups will be populated here -->
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="p-4">
+                    <i class="fas fa-dice text-3xl text-blue-500 mb-2"></i>
+                    <p class="text-sm text-gray-600">Selector Aleatorio</p>
+                </div>
+                <div class="p-4">
+                    <i class="fas fa-medal text-3xl text-yellow-500 mb-2"></i>
+                    <p class="text-sm text-gray-600">Badges y Logros</p>
+                </div>
+                <div class="p-4">
+                    <i class="fas fa-users text-3xl text-purple-500 mb-2"></i>
+                    <p class="text-sm text-gray-600">Equipos/Casas</p>
+                </div>
+                <div class="p-4">
+                    <i class="fas fa-trophy text-3xl text-green-500 mb-2"></i>
+                    <p class="text-sm text-gray-600">Podio y Premios</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SETUP WIZARD -->
+    <!-- ============================================ -->
+    <div id="setup-wizard" class="min-h-screen hidden">
+        <!-- Progress Bar -->
+        <div class="bg-white shadow-md sticky top-0 z-40">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-lg font-bold text-gray-800">Configuración del Grupo</h2>
+                    <span id="wizard-step-indicator" class="text-sm text-gray-500">Paso 1 de 5</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="wizard-progress-bar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500" style="width: 20%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 py-8 max-w-3xl">
+            <!-- Step 1: Professor Data -->
+            <div id="wizard-step-1" class="wizard-step">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+                            <i class="fas fa-user-tie text-4xl text-blue-600"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Datos del Grupo</h2>
+                        <p class="text-gray-600 mt-2">Información básica para este grupo de clase</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Logo Upload -->
+                        <div class="text-center">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Logo o Imagen (Opcional)</label>
+                            <div class="flex flex-col items-center">
+                                <div id="logo-preview" class="w-32 h-32 rounded-full bg-gray-100 border-4 border-dashed border-gray-300 flex items-center justify-center mb-4 overflow-hidden">
+                                    <i class="fas fa-camera text-3xl text-gray-400"></i>
+                                </div>
+                                <input type="file" id="logo-input" accept="image/jpeg,image/jpg,image/png" class="hidden" onchange="handleLogoUpload(event)">
+                                <button type="button" onclick="document.getElementById('logo-input').click()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all">
+                                    <i class="fas fa-upload mr-2"></i>Subir Imagen
+                                </button>
+                                <p class="text-xs text-gray-500 mt-2">JPG, JPEG o PNG. Se ajustará a máx 200px</p>
+                            </div>
+                        </div>
+
+                        <!-- Professor Name -->
+                        <div>
+                            <label for="professor-name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombre del Profesor <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="professor-name" placeholder="Ej: Prof. María García"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        </div>
+
+                        <!-- Subject/Group Name -->
+                        <div>
+                            <label for="subject-name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombre del Grupo/Materia <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="subject-name" placeholder="Ej: Matemáticas I - Grupo A"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        </div>
+
+                        <!-- Period -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="period-start" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Fecha de Inicio
+                                </label>
+                                <input type="date" id="period-start"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            </div>
+                            <div>
+                                <label for="period-end" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Fecha de Fin
+                                </label>
+                                <input type="date" id="period-end"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Students -->
+            <div id="wizard-step-2" class="wizard-step hidden">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="inline-block p-4 bg-green-100 rounded-full mb-4">
+                            <i class="fas fa-users text-4xl text-green-600"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Cargar Alumnos</h2>
+                        <p class="text-gray-600 mt-2">Agrega los estudiantes de este grupo</p>
+                    </div>
+
+                    <!-- Add Student Form -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                            <div class="md:col-span-5">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nombre Completo <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="new-student-name" placeholder="Nombre del estudiante"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                            </div>
+                            <div class="md:col-span-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Matrícula
+                                </label>
+                                <input type="text" id="new-student-id" placeholder="Matrícula"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all">
+                            </div>
+                            <div class="md:col-span-3">
+                                <button type="button" onclick="addStudentToWizardList()"
+                                    class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg transition-all">
+                                    <i class="fas fa-plus mr-2"></i>Agregar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="no-matricula" class="form-checkbox h-5 w-5 text-green-500 rounded" onchange="toggleMatriculaInput()">
+                                <span class="ml-2 text-sm text-gray-600">Sin matrícula (se generará automáticamente)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Students List -->
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-gray-700">
+                                <i class="fas fa-list mr-2"></i>
+                                Estudiantes Agregados: <span id="wizard-student-count" class="text-green-600">0</span>
+                            </h3>
+                        </div>
+                        <div id="wizard-students-list" class="space-y-2 max-h-80 overflow-y-auto">
+                            <p class="text-center text-gray-400 py-8" id="no-students-msg">
+                                <i class="fas fa-user-plus text-4xl mb-2 block"></i>
+                                Aún no hay estudiantes agregados
+                            </p>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-4">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Mínimo 2 estudiantes para continuar
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Teams/Houses -->
+            <div id="wizard-step-3" class="wizard-step hidden">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="inline-block p-4 bg-purple-100 rounded-full mb-4">
+                            <i class="fas fa-layer-group text-4xl text-purple-600"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Configuración de Equipos</h2>
+                        <p class="text-gray-600 mt-2">Organiza a los estudiantes en equipos (opcional)</p>
+                    </div>
+
+                    <!-- Enable Teams Toggle -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <div>
+                                <span class="font-semibold text-gray-800">¿Usar equipos/casas?</span>
+                                <p class="text-sm text-gray-500">Los estudiantes competirán también como equipo</p>
+                            </div>
+                            <div class="relative">
+                                <input type="checkbox" id="enable-teams" class="sr-only peer" onchange="toggleTeamsConfig()">
+                                <div class="w-14 h-8 bg-gray-300 peer-checked:bg-purple-500 rounded-full transition-colors duration-300"></div>
+                                <div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow peer-checked:translate-x-6 transition-transform duration-300"></div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Teams Configuration -->
+                    <div id="teams-config" class="hidden space-y-6">
+                        <!-- Number of Teams -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Cantidad de Equipos: <span id="teams-count-display" class="font-bold text-purple-600">4</span>
+                            </label>
+                            <input type="range" id="teams-count" min="2" max="8" value="4"
+                                class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                                oninput="updateTeamsCount(this.value)">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>2</span>
+                                <span>8</span>
+                            </div>
+                        </div>
+
+                        <!-- Teams List -->
+                        <div id="wizard-teams-list" class="space-y-4">
+                            <!-- Teams will be generated here -->
+                        </div>
+
+                        <!-- Assignment Mode -->
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                Asignación de Estudiantes a Equipos
+                            </label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all has-[:checked]:border-purple-500 has-[:checked]:bg-purple-50">
+                                    <input type="radio" name="assignment-mode" value="random" checked class="form-radio h-5 w-5 text-purple-600">
+                                    <div class="ml-3">
+                                        <span class="font-semibold text-gray-800">Aleatorio</span>
+                                        <p class="text-sm text-gray-500">Distribución automática equilibrada</p>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-400 transition-all has-[:checked]:border-purple-500 has-[:checked]:bg-purple-50">
+                                    <input type="radio" name="assignment-mode" value="manual" class="form-radio h-5 w-5 text-purple-600">
+                                    <div class="ml-3">
+                                        <span class="font-semibold text-gray-800">Manual</span>
+                                        <p class="text-sm text-gray-500">Asignar después en configuración</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Badges -->
+            <div id="wizard-step-4" class="wizard-step hidden">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="inline-block p-4 bg-yellow-100 rounded-full mb-4">
+                            <i class="fas fa-medal text-4xl text-yellow-600"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Selección de Badges</h2>
+                        <p class="text-gray-600 mt-2">Elige qué insignias estarán disponibles</p>
+                    </div>
+
+                    <div class="space-y-4" id="wizard-badges-list">
+                        <!-- Badges will be generated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Prizes -->
+            <div id="wizard-step-5" class="wizard-step hidden">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <div class="inline-block p-4 bg-green-100 rounded-full mb-4">
+                            <i class="fas fa-gift text-4xl text-green-600"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Configuración de Premios</h2>
+                        <p class="text-gray-600 mt-2">Define los premios para este grupo (opcional)</p>
+                    </div>
+
+                    <!-- Enable Prizes Toggle -->
+                    <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <div>
+                                <span class="font-semibold text-gray-800">¿Dar premios al final del período?</span>
+                                <p class="text-sm text-gray-500">Puedes dejar campos vacíos</p>
+                            </div>
+                            <div class="relative">
+                                <input type="checkbox" id="enable-prizes" class="sr-only peer" checked onchange="togglePrizesConfig()">
+                                <div class="w-14 h-8 bg-gray-300 peer-checked:bg-green-500 rounded-full transition-colors duration-300"></div>
+                                <div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow peer-checked:translate-x-6 transition-transform duration-300"></div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Prizes Configuration -->
+                    <div id="prizes-config" class="space-y-6">
+                        <!-- Top 3 -->
+                        <div class="bg-yellow-50 rounded-xl p-6 border-2 border-yellow-200">
+                            <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-medal text-yellow-500 mr-2"></i>Premios Top 3</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">🥇 1er Lugar</label>
+                                    <input type="text" id="prize-1st" placeholder="Ej: Punto extra en examen"
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">🥈 2do Lugar</label>
+                                    <input type="text" id="prize-2nd" placeholder="Ej: Medio punto extra"
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">🥉 3er Lugar</label>
+                                    <input type="text" id="prize-3rd" placeholder="Ej: Medio punto extra"
+                                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-orange-400">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Consistency -->
+                        <div class="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
+                            <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-bullseye text-blue-500 mr-2"></i>Premio Consistencia</h3>
+                            <input type="text" id="prize-consistency" placeholder="Ej: 5 puntos en tarea"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Team Prize (shown if teams enabled) -->
+                        <div id="prize-team-section" class="bg-purple-50 rounded-xl p-6 border-2 border-purple-200 hidden">
+                            <h3 class="font-bold text-gray-800 mb-4"><i class="fas fa-crown text-purple-500 mr-2"></i>Premio Equipo Ganador</h3>
+                            <input type="text" id="prize-team" placeholder="Ej: +2 puntos para cada integrante"
+                                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8">
+                <button id="wizard-prev" onclick="prevWizardStep()" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition-all hidden">
+                    <i class="fas fa-arrow-left mr-2"></i>Anterior
+                </button>
+                <div class="flex-1"></div>
+                <button id="wizard-next" onclick="nextWizardStep()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all">
+                    Siguiente<i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <button id="wizard-finish" onclick="finishWizardSetup()" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all hidden">
+                    <i class="fas fa-check mr-2"></i>Crear Grupo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MAIN BOARD (existing content wrapped) -->
+    <!-- ============================================ -->
+    <div id="main-board">
+
     <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+    <header id="board-header" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
         <div class="container mx-auto px-4 py-6">
             <h1 class="text-3xl font-bold text-center">
                 <i class="fas fa-trophy mr-2"></i>
@@ -104,11 +514,13 @@
                         <div class="text-sm opacity-90">+1 pt extra</div>
                     </button>
 
+                    <!-- MVP Button hidden - feature removed in v2.0
                     <button id="teamMvpBtn" class="action-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
                         <i class="fas fa-award text-2xl mb-2"></i>
                         <div class="text-lg">MVP Trabajo en Equipo</div>
                         <div class="text-sm opacity-90">+2 pts</div>
                     </button>
+                    -->
 
                     <button id="resetBtn" class="action-btn bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
                         <i class="fas fa-redo text-2xl mb-2"></i>
@@ -279,6 +691,7 @@
                         </div>
                     </div>
 
+                    <!-- MVP Badge hidden - feature removed in v2.0
                     <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
                         <i class="fas fa-award text-2xl text-blue-600 mt-1"></i>
                         <div>
@@ -286,6 +699,7 @@
                             <p class="text-sm text-gray-600">Más MVPs en trabajos grupales</p>
                         </div>
                     </div>
+                    -->
 
                     <div class="flex items-start space-x-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
                         <i class="fas fa-fire text-2xl text-orange-600 mt-1"></i>
@@ -299,7 +713,7 @@
                         <i class="fas fa-chart-line text-2xl text-green-600 mt-1"></i>
                         <div>
                             <h3 class="font-bold text-gray-800">Sistema de Puntos</h3>
-                            <p class="text-sm text-gray-600">Azar: 1pt | Voluntaria: 3pts | Insightful: +1pt | MVP Equipo: +2pts</p>
+                            <p class="text-sm text-gray-600">Azar: 1pt | Voluntaria: 3pts | Insightful: +1pt</p>
                         </div>
                     </div>
 
@@ -507,6 +921,9 @@
             </p>
         </div>
     </footer>
+
+    </div>
+    <!-- END MAIN BOARD -->
 
     <!-- Student Profile Modal -->
     <div id="studentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4" onclick="if(event.target === this) closeStudentModal()">
