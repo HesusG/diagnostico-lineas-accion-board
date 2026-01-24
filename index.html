@@ -11,6 +11,11 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Google Fonts - Inter for Neo Brutalism -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
 
@@ -30,7 +35,7 @@
         }
     </script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen">
 
     <!-- ============================================ -->
     <!-- WELCOME SCREEN -->
@@ -935,7 +940,60 @@
     <!-- Confetti Container (for celebrations) -->
     <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-50"></div>
 
+    <!-- Theme Selector -->
+    <div id="theme-selector" class="theme-selector">
+        <span class="text-sm font-bold mr-2" style="display: flex; align-items: center;">
+            <i class="fas fa-palette mr-1"></i>
+        </span>
+        <button id="theme-neo" class="active" onclick="setTheme('neobrutalism')" title="Neo Brutalism">
+            <i class="fas fa-square"></i> NEO
+        </button>
+        <button id="theme-classic" onclick="setTheme('classic')" title="Classic">
+            <i class="fas fa-circle"></i> CLASSIC
+        </button>
+    </div>
+
     <!-- JavaScript -->
     <script src="app.js"></script>
+
+    <!-- Theme Manager -->
+    <script>
+        // Theme Management System
+        const THEMES = {
+            NEOBRUTALISM: 'neobrutalism',
+            CLASSIC: 'classic'
+        };
+
+        function setTheme(themeName) {
+            const body = document.body;
+
+            // Remove all theme classes
+            body.classList.remove('theme-classic', 'theme-neobrutalism');
+
+            // Apply new theme
+            if (themeName === THEMES.CLASSIC) {
+                body.classList.add('theme-classic');
+            }
+            // Neobrutalism is default (no class needed)
+
+            // Update button states
+            document.getElementById('theme-neo').classList.toggle('active', themeName === THEMES.NEOBRUTALISM);
+            document.getElementById('theme-classic').classList.toggle('active', themeName === THEMES.CLASSIC);
+
+            // Save preference
+            localStorage.setItem('app-theme', themeName);
+
+            // Dispatch event for other components
+            window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: themeName } }));
+        }
+
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('app-theme') || THEMES.NEOBRUTALISM;
+            setTheme(savedTheme);
+        }
+
+        // Load theme on page load
+        document.addEventListener('DOMContentLoaded', loadSavedTheme);
+    </script>
 </body>
 </html>
