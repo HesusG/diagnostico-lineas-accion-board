@@ -12,61 +12,68 @@
 
     /* === NEOBRUTALISM THEME (DEFAULT) === */
 
-    /* Core colors */
-    --color-primary: #3b82f6;
-    --color-secondary: #8b5cf6;
-    --color-success: #22c55e;
-    --color-warning: #eab308;
-    --color-danger: #ef4444;
+    /* Core colors - VIBRANT & HIGH CONTRAST */
+    --color-primary: #FF6B6B;
+    --color-secondary: #4ECDC4;
+    --color-success: #45B7D1;
+    --color-warning: #F7DC6F;
+    --color-danger: #FF6B6B;
+    --color-accent: #DDA0DD;
 
-    /* Background colors */
+    /* Background colors - BOLD */
     --color-bg-primary: #ffffff;
-    --color-bg-secondary: #fef3c7;
-    --color-bg-tertiary: #fce7f3;
-    --color-bg-accent: #dbeafe;
+    --color-bg-secondary: #FFF9E6;
+    --color-bg-tertiary: #FFE4F3;
+    --color-bg-accent: #E8F4FD;
+    --color-bg-lime: #D4FC79;
+    --color-bg-peach: #FFEAA7;
 
     /* Text colors */
     --color-text-primary: #000000;
-    --color-text-secondary: #1f2937;
-    --color-text-muted: #4b5563;
+    --color-text-secondary: #1a1a1a;
+    --color-text-muted: #333333;
 
-    /* Border */
-    --border-width: 3px;
+    /* Border - THICK & BOLD */
+    --border-width: 4px;
     --border-color: #000000;
     --border-radius: 0px;
 
-    /* Shadow - Neo brutalism style (solid, no blur) */
-    --shadow-offset: 4px;
+    /* Shadow - Neo brutalism style (CHUNKY solid shadows) */
     --shadow-color: #000000;
-    --shadow-sm: 2px 2px 0px var(--shadow-color);
-    --shadow-md: 4px 4px 0px var(--shadow-color);
-    --shadow-lg: 6px 6px 0px var(--shadow-color);
-    --shadow-xl: 8px 8px 0px var(--shadow-color);
+    --shadow-sm: 3px 3px 0px var(--shadow-color);
+    --shadow-md: 6px 6px 0px var(--shadow-color);
+    --shadow-lg: 8px 8px 0px var(--shadow-color);
+    --shadow-xl: 12px 12px 0px var(--shadow-color);
 
-    /* Typography */
+    /* Typography - BOLD & DOMINANT */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-weight-normal: 500;
-    --font-weight-bold: 800;
+    --font-weight-normal: 600;
+    --font-weight-bold: 900;
 
     /* Transitions */
     --transition-fast: 0.1s ease;
-    --transition-normal: 0.2s ease;
+    --transition-normal: 0.15s ease;
 
-    /* House colors */
-    --fire-color: #EF4444;
-    --fire-bg: #FEE2E2;
+    /* Imperfections - subtle rotations */
+    --rotate-sm: -0.5deg;
+    --rotate-md: 1deg;
+    --rotate-lg: -1.5deg;
+
+    /* House colors - VIBRANT */
+    --fire-color: #FF6B6B;
+    --fire-bg: #FFE8E8;
     --fire-border: #000000;
 
-    --water-color: #3B82F6;
-    --water-bg: #DBEAFE;
+    --water-color: #4ECDC4;
+    --water-bg: #E8FFFC;
     --water-border: #000000;
 
-    --earth-color: #22C55E;
-    --earth-bg: #DCFCE7;
+    --earth-color: #95E679;
+    --earth-bg: #EFFFEA;
     --earth-border: #000000;
 
-    --air-color: #8B5CF6;
-    --air-bg: #EDE9FE;
+    --air-color: #DDA0DD;
+    --air-bg: #FFF0FF;
     --air-border: #000000;
 }
 
@@ -132,15 +139,135 @@ body {
 }
 
 /* ==========================================
+   NEO BRUTALISM - GRID BACKGROUND
+   ========================================== */
+
+body:not(.theme-classic) {
+    background-image:
+        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: var(--color-bg-secondary);
+}
+
+/* ==========================================
+   NEO BRUTALISM - DECORATIVE ELEMENTS
+   ========================================== */
+
+/* Floating decorative shapes */
+body:not(.theme-classic)::before {
+    content: '';
+    position: fixed;
+    top: 10%;
+    left: -30px;
+    width: 80px;
+    height: 80px;
+    background: var(--color-warning);
+    border: 4px solid #000;
+    border-radius: 0;
+    transform: rotate(15deg);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+body:not(.theme-classic)::after {
+    content: '';
+    position: fixed;
+    bottom: 15%;
+    right: -20px;
+    width: 60px;
+    height: 60px;
+    background: var(--color-secondary);
+    border: 4px solid #000;
+    border-radius: 50%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* Additional decorative element via main container */
+body:not(.theme-classic) #main-board::before {
+    content: '★';
+    position: fixed;
+    top: 25%;
+    right: 5%;
+    font-size: 40px;
+    color: var(--color-primary);
+    transform: rotate(-10deg);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    text-shadow: 2px 2px 0 #000;
+}
+
+body:not(.theme-classic) #main-board::after {
+    content: '◆';
+    position: fixed;
+    bottom: 30%;
+    left: 3%;
+    font-size: 30px;
+    color: var(--color-accent);
+    transform: rotate(20deg);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    text-shadow: 2px 2px 0 #000;
+}
+
+/* ==========================================
    NEOBRUTALISM COMPONENT OVERRIDES
    ========================================== */
 
-/* Cards & Containers */
+/* Cards & Containers - STACKED LAYERS EFFECT */
 body:not(.theme-classic) .bg-white {
     background-color: var(--color-bg-primary) !important;
     border: var(--border-width) solid var(--border-color) !important;
     border-radius: var(--border-radius) !important;
     box-shadow: var(--shadow-md) !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sticker/Layer effect on main cards */
+body:not(.theme-classic) section > .bg-white {
+    transform: rotate(var(--rotate-sm));
+}
+
+body:not(.theme-classic) section:nth-child(even) > .bg-white {
+    transform: rotate(calc(var(--rotate-sm) * -1));
+}
+
+/* Cards that overflow their container */
+body:not(.theme-classic) section > .bg-white::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 30px;
+    height: 30px;
+    background: var(--color-warning);
+    border: 3px solid #000;
+    z-index: -1;
+    transform: rotate(10deg);
+}
+
+body:not(.theme-classic) section:nth-child(3n) > .bg-white::before {
+    background: var(--color-secondary);
+    top: auto;
+    bottom: -10px;
+    right: 20px;
+    border-radius: 50%;
+    transform: none;
+}
+
+body:not(.theme-classic) section:nth-child(3n+1) > .bg-white::before {
+    background: var(--color-primary);
+    width: 20px;
+    height: 40px;
+    top: 10px;
+    right: -12px;
+    transform: rotate(-5deg);
 }
 
 body:not(.theme-classic) .rounded-2xl,
@@ -155,7 +282,7 @@ body:not(.theme-classic) .shadow-md {
     box-shadow: var(--shadow-md) !important;
 }
 
-/* Buttons - Neo brutalism style */
+/* Buttons - Neo brutalism style - CHUNKY */
 body:not(.theme-classic) button,
 body:not(.theme-classic) .btn {
     border: var(--border-width) solid var(--border-color) !important;
@@ -163,19 +290,20 @@ body:not(.theme-classic) .btn {
     box-shadow: var(--shadow-sm) !important;
     font-weight: var(--font-weight-bold) !important;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     transition: all var(--transition-fast) !important;
+    position: relative;
 }
 
 body:not(.theme-classic) button:hover,
 body:not(.theme-classic) .btn:hover {
-    transform: translate(-2px, -2px) !important;
-    box-shadow: var(--shadow-md) !important;
+    transform: translate(-3px, -3px) rotate(0.5deg) !important;
+    box-shadow: var(--shadow-lg) !important;
 }
 
 body:not(.theme-classic) button:active,
 body:not(.theme-classic) .btn:active {
-    transform: translate(2px, 2px) !important;
+    transform: translate(3px, 3px) !important;
     box-shadow: none !important;
 }
 
@@ -312,30 +440,69 @@ body:not(.theme-classic) .bg-gray-200[class*="rounded-full"] {
     overflow: hidden;
 }
 
-/* Theme selector button styles */
+/* Theme selector button styles - DISCRETE & MINIMAL */
 .theme-selector {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 16px;
+    left: 16px;
     z-index: 1000;
     display: flex;
-    gap: 8px;
-    padding: 12px;
-    background: var(--color-bg-primary);
-    border: var(--border-width) solid var(--border-color);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid var(--border-color);
+    border-radius: 0;
+    box-shadow: 3px 3px 0px var(--shadow-color);
+    font-size: 11px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.theme-selector:hover {
+    opacity: 1;
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px var(--shadow-color);
+}
+
+.theme-selector .theme-label {
+    font-weight: 700;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-right: 4px;
 }
 
 .theme-selector button {
-    padding: 8px 16px;
-    font-size: 12px;
+    padding: 4px 8px;
+    font-size: 9px;
     cursor: pointer;
+    background: #f5f5f5;
+    min-width: auto;
 }
 
 .theme-selector button.active {
-    background-color: var(--color-primary) !important;
+    background-color: #000 !important;
     color: white !important;
+}
+
+.theme-selector button:hover:not(.active) {
+    background-color: #e0e0e0 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Classic theme selector style */
+body.theme-classic .theme-selector {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+body.theme-classic .theme-selector button {
+    border-radius: 4px;
+    border: 1px solid #ddd;
 }
 
 /* Classic theme - restore normal rounded corners and soft shadows */
@@ -941,23 +1108,24 @@ button:focus-visible {
 }
 
 /* ==========================================
-   NEO BRUTALISM SPECIFIC ENHANCEMENTS
+   NEO BRUTALISM - INTENTIONAL STYLE
+   "Se nota el estilo, no solo lo sugiere"
    ========================================== */
 
-/* Neo scrollbar */
+/* Neo scrollbar - CHUNKY */
 body:not(.theme-classic)::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
 }
 
 body:not(.theme-classic)::-webkit-scrollbar-track {
     background: var(--color-bg-secondary);
-    border-left: 3px solid var(--border-color);
+    border-left: 4px solid var(--border-color);
 }
 
 body:not(.theme-classic)::-webkit-scrollbar-thumb {
     background: var(--color-primary);
-    border: 2px solid var(--border-color);
+    border: 3px solid var(--border-color);
     border-radius: 0;
 }
 
@@ -965,116 +1133,285 @@ body:not(.theme-classic)::-webkit-scrollbar-thumb:hover {
     background: var(--color-secondary);
 }
 
-/* Neo random display */
+/* Neo random display - STICKER EFFECT */
 body:not(.theme-classic) #randomDisplay {
-    background: var(--color-bg-accent) !important;
+    background: var(--color-bg-lime) !important;
     border: var(--border-width) solid var(--border-color) !important;
     border-radius: var(--border-radius) !important;
+    transform: rotate(-0.5deg);
+    position: relative;
 }
 
-/* Neo action buttons with vibrant colors */
+body:not(.theme-classic) #randomDisplay::after {
+    content: '⚡';
+    position: absolute;
+    top: -15px;
+    right: -10px;
+    font-size: 28px;
+    transform: rotate(15deg);
+}
+
+/* Neo action buttons - VIBRANT & STACKED */
 body:not(.theme-classic) .action-btn.bg-green-500 {
-    background-color: #22c55e !important;
+    background-color: #95E679 !important;
+    transform: rotate(0.5deg);
 }
 
 body:not(.theme-classic) .action-btn.bg-purple-500 {
-    background-color: #a855f7 !important;
+    background-color: #DDA0DD !important;
+    transform: rotate(-0.5deg);
 }
 
 body:not(.theme-classic) .action-btn.bg-red-500 {
-    background-color: #ef4444 !important;
+    background-color: #FF6B6B !important;
+    transform: rotate(0.3deg);
 }
 
-/* Neo notifications */
+body:not(.theme-classic) .action-btn {
+    position: relative;
+}
+
+body:not(.theme-classic) .action-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: -1;
+    transition: all 0.1s ease;
+}
+
+body:not(.theme-classic) .action-btn:hover::after {
+    bottom: -6px;
+    right: -6px;
+}
+
+body:not(.theme-classic) .action-btn:active::after {
+    bottom: 0;
+    right: 0;
+}
+
+/* Neo notifications - BOLD */
 body:not(.theme-classic) .notification {
-    border: var(--border-width) solid var(--border-color) !important;
+    border: 4px solid var(--border-color) !important;
     border-radius: var(--border-radius) !important;
-    box-shadow: var(--shadow-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+    transform: rotate(1deg);
 }
 
-/* Neo modal */
+/* Neo modal - LAYERED */
 body:not(.theme-classic) .modal-card {
-    border: var(--border-width) solid var(--border-color) !important;
+    border: 5px solid var(--border-color) !important;
     border-radius: var(--border-radius) !important;
-    box-shadow: var(--shadow-xl) !important;
+    box-shadow: 12px 12px 0px var(--shadow-color) !important;
+    transform: rotate(-0.3deg);
 }
 
 /* Neo welcome screen */
 body:not(.theme-classic) #welcome-screen .rounded-full {
     border-radius: var(--border-radius) !important;
-    border: var(--border-width) solid var(--border-color) !important;
+    border: 5px solid var(--border-color) !important;
+    box-shadow: var(--shadow-lg);
 }
 
-/* Neo wizard steps */
+/* Neo header - DOMINANT */
+body:not(.theme-classic) header {
+    background: var(--color-primary) !important;
+    border-bottom: 5px solid var(--border-color) !important;
+    box-shadow: 0 6px 0 var(--shadow-color) !important;
+    position: relative;
+}
+
+body:not(.theme-classic) header::before {
+    content: '●';
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-size: 20px;
+    color: var(--color-warning);
+}
+
+body:not(.theme-classic) header::after {
+    content: '■';
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 16px;
+    color: var(--color-secondary);
+    transform: rotate(15deg);
+}
+
+/* Neo wizard steps - STACKED */
 body:not(.theme-classic) .wizard-step .bg-white {
     border: var(--border-width) solid var(--border-color) !important;
+    transform: rotate(var(--rotate-sm));
 }
 
 /* Neo toggle switches */
 body:not(.theme-classic) input[type="checkbox"] + div {
-    border: 2px solid var(--border-color) !important;
+    border: 3px solid var(--border-color) !important;
     border-radius: var(--border-radius) !important;
 }
 
-/* Neo badges in legend */
+/* Neo badges in legend - STICKER GRID */
 body:not(.theme-classic) .flex.items-start.space-x-3.p-4 {
-    border: var(--border-width) solid var(--border-color) !important;
+    border: 3px solid var(--border-color) !important;
     border-radius: var(--border-radius) !important;
+    background: var(--color-bg-primary) !important;
+    box-shadow: var(--shadow-sm) !important;
 }
 
-/* Neo range slider */
+body:not(.theme-classic) .flex.items-start.space-x-3.p-4:nth-child(odd) {
+    transform: rotate(0.3deg);
+}
+
+body:not(.theme-classic) .flex.items-start.space-x-3.p-4:nth-child(even) {
+    transform: rotate(-0.3deg);
+}
+
+/* Neo range slider - CHUNKY */
 body:not(.theme-classic) input[type="range"] {
     -webkit-appearance: none;
     background: var(--color-bg-tertiary);
-    border: 2px solid var(--border-color);
+    border: 3px solid var(--border-color);
     border-radius: 0;
-    height: 12px;
+    height: 16px;
 }
 
 body:not(.theme-classic) input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 24px;
-    height: 24px;
-    background: var(--color-primary);
-    border: 2px solid var(--border-color);
+    width: 28px;
+    height: 28px;
+    background: var(--color-warning);
+    border: 3px solid var(--border-color);
     border-radius: 0;
     cursor: pointer;
+    box-shadow: 2px 2px 0 #000;
 }
 
-/* Neo stat cards hover */
+/* Neo stat cards - VIBRANT BACKGROUNDS */
+body:not(.theme-classic) .border-l-4.border-blue-500 {
+    background: var(--color-bg-accent) !important;
+    transform: rotate(0.3deg);
+}
+
+body:not(.theme-classic) .border-l-4.border-green-500 {
+    background: var(--color-bg-lime) !important;
+    transform: rotate(-0.5deg);
+}
+
+body:not(.theme-classic) .border-l-4.border-purple-500 {
+    background: var(--air-bg) !important;
+    transform: rotate(0.4deg);
+}
+
+body:not(.theme-classic) .border-l-4.border-yellow-500 {
+    background: var(--color-bg-peach) !important;
+    transform: rotate(-0.3deg);
+}
+
+/* Neo stat cards hover - POP OUT */
 body:not(.theme-classic) .stat-card:hover,
 body:not(.theme-classic) .border-l-4:hover {
-    transform: translate(-4px, -4px) !important;
-    box-shadow: var(--shadow-lg) !important;
+    transform: translate(-5px, -5px) rotate(0deg) !important;
+    box-shadow: var(--shadow-xl) !important;
+    z-index: 10;
 }
 
-/* Vibrant background colors for neo brutalism */
-body:not(.theme-classic) {
-    background-color: #fef3c7 !important; /* Warm yellow */
+/* Neo headings - DOMINANT TYPOGRAPHY */
+body:not(.theme-classic) h1 {
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
 }
 
-/* Neo headings */
-body:not(.theme-classic) h1,
-body:not(.theme-classic) h2,
-body:not(.theme-classic) h3 {
-    font-weight: var(--font-weight-bold);
+body:not(.theme-classic) h2 {
+    font-weight: 800;
     letter-spacing: -0.02em;
+    position: relative;
+}
+
+/* Underline decoration for h2 */
+body:not(.theme-classic) section h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--color-warning);
+    margin-top: 8px;
+}
+
+body:not(.theme-classic) h3 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
 }
 
 /* Special neo button states */
 body:not(.theme-classic) button:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
 }
 
-/* Neo house cards */
+body:not(.theme-classic) button:disabled::after {
+    display: none;
+}
+
+/* Neo house cards - STACKED LAYERS */
 body:not(.theme-classic) [class*="house-card"],
 body:not(.theme-classic) .team-card {
     border: var(--border-width) solid var(--border-color) !important;
     border-radius: var(--border-radius) !important;
-    box-shadow: var(--shadow-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+    position: relative;
+}
+
+/* Neo table - BOLD GRID */
+body:not(.theme-classic) table {
+    border: 4px solid var(--border-color) !important;
+}
+
+body:not(.theme-classic) thead {
+    background: var(--color-bg-peach) !important;
+}
+
+body:not(.theme-classic) th {
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+}
+
+body:not(.theme-classic) tbody tr:nth-child(odd) {
+    background: var(--color-bg-primary);
+}
+
+body:not(.theme-classic) tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+body:not(.theme-classic) tbody tr:hover {
+    background: var(--color-bg-lime) !important;
+    transform: scale(1.01);
+}
+
+/* Neo tabs container */
+body:not(.theme-classic) nav .bg-white {
+    background: var(--color-bg-tertiary) !important;
+    transform: rotate(0deg) !important;
+}
+
+body:not(.theme-classic) nav .bg-white::before {
+    display: none;
+}
+
+/* Neo footer */
+body:not(.theme-classic) footer {
+    border-top: 5px solid var(--border-color) !important;
+    background: #1a1a1a !important;
 }
 
 /* Hide theme selector on print */
@@ -1087,17 +1424,35 @@ body:not(.theme-classic) .team-card {
 /* Responsive theme selector */
 @media (max-width: 640px) {
     .theme-selector {
-        bottom: 10px;
-        right: 10px;
-        padding: 8px;
+        bottom: 8px;
+        left: 8px;
+        padding: 4px 6px;
+    }
+
+    .theme-selector .theme-label {
+        display: none;
     }
 
     .theme-selector button {
-        padding: 6px 10px;
-        font-size: 10px;
+        padding: 3px 6px;
+        font-size: 8px;
+    }
+}
+
+/* Hide decorative elements on smaller screens */
+@media (max-width: 768px) {
+    body:not(.theme-classic)::before,
+    body:not(.theme-classic)::after,
+    body:not(.theme-classic) #main-board::before,
+    body:not(.theme-classic) #main-board::after {
+        display: none;
     }
 
-    .theme-selector span {
+    body:not(.theme-classic) section > .bg-white::before {
         display: none;
+    }
+
+    body:not(.theme-classic) section > .bg-white {
+        transform: none !important;
     }
 }
