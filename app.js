@@ -2551,6 +2551,105 @@ function toggleMatriculaInput() {
     }
 }
 
+function toggleBulkPaste() {
+    const section = document.getElementById('bulk-paste-section');
+    const btn = document.getElementById('toggle-bulk-btn');
+    const isHidden = section.classList.contains('hidden');
+
+    section.classList.toggle('hidden');
+
+    if (isHidden) {
+        btn.innerHTML = '<i class="fas fa-chevron-up mr-1"></i>Ocultar';
+    } else {
+        btn.innerHTML = '<i class="fas fa-chevron-down mr-1"></i>Mostrar';
+    }
+}
+
+function processBulkStudents() {
+    const textarea = document.getElementById('bulk-students-input');
+    const text = textarea.value.trim();
+
+    if (!text) {
+        alert('Por favor pega la lista de estudiantes');
+        return;
+    }
+
+    const lines = text.split('\n').filter(line => line.trim());
+    let added = 0;
+    let skipped = 0;
+    const errors = [];
+
+    lines.forEach((line, index) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return;
+
+        let name, studentId;
+
+        // Check if line contains comma (name, id format)
+        if (trimmedLine.includes(',')) {
+            const parts = trimmedLine.split(',');
+            name = parts[0].trim();
+            studentId = parts.slice(1).join(',').trim(); // In case ID has commas
+        } else if (trimmedLine.includes('\t')) {
+            // Tab-separated format
+            const parts = trimmedLine.split('\t');
+            name = parts[0].trim();
+            studentId = parts[1] ? parts[1].trim() : null;
+        } else {
+            // Just name, generate ID
+            name = trimmedLine;
+            studentId = null;
+        }
+
+        // Validate name
+        if (!name || name.length < 2) {
+            errors.push(`Línea ${index + 1}: Nombre inválido`);
+            skipped++;
+            return;
+        }
+
+        // Generate ID if not provided
+        if (!studentId) {
+            studentId = `EST-${String(wizardStudentIdCounter).padStart(3, '0')}`;
+            wizardStudentIdCounter++;
+        }
+
+        // Check for duplicate
+        if (wizardData.students.some(s => s.id === studentId)) {
+            errors.push(`Línea ${index + 1}: Matrícula duplicada (${studentId})`);
+            skipped++;
+            return;
+        }
+
+        // Check for duplicate name
+        if (wizardData.students.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+            errors.push(`Línea ${index + 1}: Nombre duplicado (${name})`);
+            skipped++;
+            return;
+        }
+
+        // Add student
+        wizardData.students.push({ name, id: studentId });
+        added++;
+    });
+
+    // Clear textarea
+    textarea.value = '';
+
+    // Update list
+    renderWizardStudentsList();
+
+    // Show result
+    let message = `✓ ${added} estudiante(s) agregado(s)`;
+    if (skipped > 0) {
+        message += `\n⚠ ${skipped} línea(s) omitida(s)`;
+        if (errors.length > 0 && errors.length <= 5) {
+            message += '\n\n' + errors.join('\n');
+        }
+    }
+    alert(message);
+}
+
 function toggleTeamsConfig() {
     const enabled = document.getElementById('enable-teams').checked;
     wizardData.teams.enabled = enabled;
